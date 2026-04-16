@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Navbar } from '@/components/shared/Navbar'
 import { CoachSidebar } from '@/components/shared/CoachSidebar'
+import { BottomNav } from '@/components/shared/BottomNav'
 
 export default async function CoachLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -25,8 +26,11 @@ export default async function CoachLayout({ children }: { children: React.ReactN
       <Navbar fullName={profile.full_name} role="coach" />
       <div className="flex flex-1 overflow-hidden">
         <CoachSidebar />
-        <main className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 md:pb-6 max-w-6xl mx-auto w-full">
+          {children}
+        </main>
       </div>
+      <BottomNav role="coach" />
     </div>
   )
 }

@@ -95,7 +95,7 @@ export function HealthProfileForm({
           </div>
           <h2 className="font-semibold">Personal Stats</h2>
         </div>
-        <div className="p-6 grid grid-cols-2 gap-4">
+        <div className="p-4 sm:p-6 grid grid-cols-2 sm:grid-cols-2 gap-3 sm:gap-4">
           <Input
             label="Weight (kg)"
             type="number"
@@ -228,7 +228,7 @@ export function HealthProfileForm({
           {/* Activity level */}
           <div>
             <label className="text-sm font-medium text-[var(--fg-70)] block mb-2">Activity Level</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               {ACTIVITY_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}

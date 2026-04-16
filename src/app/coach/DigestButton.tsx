@@ -59,15 +59,15 @@ export function DigestButton() {
       </Button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4">
           {/* Backdrop */}
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => !loading && setOpen(false)}
           />
 
-          {/* Modal */}
-          <div className="relative w-full max-w-2xl bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl shadow-2xl flex flex-col max-h-[85vh]">
+          {/* Modal — full-screen sheet on mobile, centered card on desktop */}
+          <div className="relative w-full sm:max-w-2xl bg-[var(--bg-elevated)] border border-[var(--border)] sm:rounded-2xl rounded-t-2xl shadow-2xl flex flex-col max-h-[92vh] sm:max-h-[85vh]">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-8)] flex-shrink-0">
               <div className="flex items-center gap-3">

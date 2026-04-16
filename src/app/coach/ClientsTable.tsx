@@ -13,7 +13,6 @@ interface ClientRow {
 
 export function ClientsTable({
   clients,
-  coachId,
 }: {
   clients: ClientRow[]
   coachId: string
@@ -34,27 +33,68 @@ export function ClientsTable({
 
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl overflow-hidden">
-      <div className="px-6 py-4 border-b border-[var(--border-8)] flex items-center justify-between">
+      <div className="px-4 sm:px-6 py-4 border-b border-[var(--border-8)] flex items-center justify-between">
         <h2 className="font-semibold">Clients</h2>
         <span className="text-sm text-[var(--fg-40)]">{clients.length} total</span>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile: card list */}
+      <div className="md:hidden divide-y divide-[var(--border-5)]">
+        {clients.map((c) => (
+          <Link
+            key={c.id}
+            href={`/coach/clients/${c.id}`}
+            className="flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--bg-subtle)] transition-colors"
+          >
+            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-[var(--accent-wash)] to-[var(--accent-tint)] border border-[var(--accent-border-sub)] flex items-center justify-center flex-shrink-0">
+              <span className="text-sm font-semibold text-[var(--accent-fg)]">
+                {c.full_name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm truncate">{c.full_name}</p>
+              <div className="flex items-center gap-3 mt-0.5">
+                {c.checkedInToday ? (
+                  <span className="flex items-center gap-1 text-xs text-[var(--accent-fg)]">
+                    <CheckCircle2 className="h-3 w-3" /> Done
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-xs text-[var(--fg-30)]">
+                    <XCircle className="h-3 w-3" /> Pending
+                  </span>
+                )}
+                {c.streak > 0 && (
+                  <span className="flex items-center gap-0.5 text-xs text-orange-400">
+                    <Flame className="h-3 w-3" /> {c.streak}d
+                  </span>
+                )}
+                <div className="flex items-center gap-1.5 ml-auto">
+                  <div className="w-16 h-1 bg-[var(--border)] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${
+                        c.completionRate >= 80 ? 'bg-[var(--accent)]' : c.completionRate >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${c.completionRate}%` }}
+                    />
+                  </div>
+                  <span className="text-xs text-[var(--fg-50)]">{c.completionRate}%</span>
+                </div>
+              </div>
+            </div>
+            <ChevronRight className="h-4 w-4 text-[var(--fg-30)] flex-shrink-0" />
+          </Link>
+        ))}
+      </div>
+
+      {/* Desktop: table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-[var(--border-5)]">
-              <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">
-                Name
-              </th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">
-                Today
-              </th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">
-                Streak
-              </th>
-              <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">
-                30-day rate
-              </th>
+              <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">Name</th>
+              <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">Today</th>
+              <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">Streak</th>
+              <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">30-day rate</th>
               <th className="px-6 py-3" />
             </tr>
           </thead>
@@ -91,9 +131,7 @@ export function ClientsTable({
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-1.5">
-                    <Flame
-                      className={`h-4 w-4 ${c.streak > 0 ? 'text-orange-400' : 'text-[var(--fg-20)]'}`}
-                    />
+                    <Flame className={`h-4 w-4 ${c.streak > 0 ? 'text-orange-400' : 'text-[var(--fg-20)]'}`} />
                     <span className={`text-sm font-semibold ${c.streak > 0 ? 'text-orange-400' : 'text-[var(--fg-30)]'}`}>
                       {c.streak}d
                     </span>
@@ -104,18 +142,12 @@ export function ClientsTable({
                     <div className="flex-1 min-w-[80px] h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all ${
-                          c.completionRate >= 80
-                            ? 'bg-[var(--accent)]'
-                            : c.completionRate >= 50
-                            ? 'bg-yellow-500'
-                            : 'bg-red-500'
+                          c.completionRate >= 80 ? 'bg-[var(--accent)]' : c.completionRate >= 50 ? 'bg-yellow-500' : 'bg-red-500'
                         }`}
                         style={{ width: `${c.completionRate}%` }}
                       />
                     </div>
-                    <span className="text-sm text-[var(--fg-60)] w-9 text-right">
-                      {c.completionRate}%
-                    </span>
+                    <span className="text-sm text-[var(--fg-60)] w-9 text-right">{c.completionRate}%</span>
                   </div>
                 </td>
                 <td className="px-6 py-4">

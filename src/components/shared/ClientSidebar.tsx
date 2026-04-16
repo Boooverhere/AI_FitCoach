@@ -13,7 +13,7 @@ export function ClientSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-56 border-r border-[var(--border-8)] flex-shrink-0 flex flex-col gap-1 pt-4 px-3 bg-[var(--bg-nav)]">
+    <aside className="hidden md:flex w-56 border-r border-[var(--border-8)] flex-shrink-0 flex-col gap-1 pt-4 px-3 bg-[var(--bg-nav)]">
       {links.map((l) => {
         const active = pathname === l.href
         return (

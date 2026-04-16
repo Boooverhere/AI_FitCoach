@@ -80,13 +80,13 @@ export default async function CoachDashboard() {
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-2xl sm:text-3xl font-bold">
             Good {getGreeting()},{' '}
             <span className="text-[var(--accent-fg)]">{profile?.full_name?.split(' ')[0]}</span>
           </h1>
-          <p className="text-[var(--fg-40)] mt-1">
+          <p className="text-[var(--fg-40)] text-sm mt-0.5">
             {checkedInCount} of {clientRows.length} clients checked in today
           </p>
         </div>

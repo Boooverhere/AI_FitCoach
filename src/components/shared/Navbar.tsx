@@ -33,14 +33,15 @@ export function Navbar({ fullName, role }: NavbarProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-sm text-[var(--fg-50)]">{fullName}</span>
+        <span className="hidden sm:block text-sm text-[var(--fg-50)]">{fullName}</span>
         <ThemeToggle />
         <button
           onClick={signOut}
           className="flex items-center gap-2 text-sm text-[var(--fg-40)] hover:text-[var(--fg-70)] transition-colors px-2 py-1.5"
+          title="Sign out"
         >
           <LogOut className="h-4 w-4" />
-          Sign out
+          <span className="hidden sm:inline">Sign out</span>
         </button>
       </div>
     </nav>
