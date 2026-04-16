@@ -89,6 +89,18 @@
   transition-timing-function: ease;
 }
 
+/* ─── Mobile tap performance ────────────────────────────── */
+/* Eliminates the 300ms tap delay on mobile browsers        */
+a, button, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Interactive elements: no transition during active press  */
+a:active, button:active {
+  transition-duration: 0ms;
+}
+
 body {
   background: var(--bg-base);
   color: var(--fg);

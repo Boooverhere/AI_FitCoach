@@ -20,21 +20,22 @@ export function BottomNav({ role }: { role: 'coach' | 'client' }) {
   const links = role === 'coach' ? coachLinks : clientLinks
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-nav)] border-t border-[var(--border-8)] flex items-stretch safe-area-pb">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-nav)] border-t border-[var(--border-8)] flex items-stretch">
       {links.map((l) => {
         const active = l.exact ? pathname === l.href : pathname.startsWith(l.href)
         return (
           <Link
             key={l.href}
             href={l.href}
-            className={`flex-1 flex flex-col items-center justify-center gap-1 py-2.5 transition-colors ${
+            prefetch
+            className={`relative flex-1 flex flex-col items-center justify-center gap-1 py-3 select-none active:opacity-50 ${
               active ? 'text-[var(--accent-fg)]' : 'text-[var(--fg-40)]'
             }`}
           >
-            <l.icon className="h-5 w-5" />
+            <l.icon className="h-5 w-5" strokeWidth={active ? 2.5 : 1.75} />
             <span className="text-[10px] font-medium leading-none">{l.label}</span>
             {active && (
-              <span className="absolute bottom-0 w-8 h-0.5 bg-[var(--accent)] rounded-t-full" />
+              <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-[var(--accent)] rounded-b-full" />
             )}
           </Link>
         )
