@@ -30,14 +30,14 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
-  const publicRoutes = ['/login', '/signup', '/onboarding']
-  const isPublic = publicRoutes.some((r) => pathname.startsWith(r))
+  const publicRoutes = ['/', '/login', '/signup', '/onboarding']
+  const isPublic = publicRoutes.some((r) => pathname === r || pathname.startsWith(r + '/'))
 
   if (!user && !isPublic) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  if (user && !isPublic) {
+  if (user) {
     const { data: profile } = await supabase
       .from('profiles')
       .select('role, full_name')
@@ -45,13 +45,13 @@ export async function proxy(request: NextRequest) {
       .single()
 
     // No role means onboarding was never completed
-    if (!profile?.role) {
+    if (!profile?.role && pathname !== '/onboarding') {
       return NextResponse.redirect(new URL('/onboarding', request.url))
     }
 
     // Root redirect to role dashboard
     if (pathname === '/') {
-      const dest = profile.role === 'coach' ? '/coach' : '/client'
+      const dest = profile?.role === 'coach' ? '/coach' : '/client'
       return NextResponse.redirect(new URL(dest, request.url))
     }
   }

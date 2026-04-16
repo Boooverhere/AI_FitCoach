@@ -3,6 +3,8 @@ import { ClientsTable } from './ClientsTable'
 import { StatsBar } from './StatsBar'
 import { InviteCodeBanner } from './InviteCodeBanner'
 import { DigestButton } from './DigestButton'
+import { AddClientModal } from './AddClientModal'
+import { OnboardingBanner } from './OnboardingBanner'
 
 export default async function CoachDashboard() {
   const supabase = await createClient()
@@ -55,27 +57,36 @@ export default async function CoachDashboard() {
   const clientRows = (clients ?? []).map((c) => {
     const checkedInToday = todayCheckins?.some((ci) => ci.client_id === c.id) ?? false
 
-    // Average streak across habits
     const habitsForClient = clientHabits?.filter((ch) => ch.client_id === c.id) ?? []
     const streak =
       habitsForClient.length
         ? Math.round(habitsForClient.reduce((a, h) => a + h.streak, 0) / habitsForClient.length)
         : 0
 
-    // Completion rate: days checked in / 30 days
     const checkinsForClient = recentCheckins?.filter((ci) => ci.client_id === c.id) ?? []
     const completionRate = Math.round((checkinsForClient.length / 30) * 100)
 
-    return {
-      id: c.id,
-      full_name: c.full_name,
-      checkedInToday,
-      streak,
-      completionRate,
-    }
+    return { id: c.id, full_name: c.full_name, checkedInToday, streak, completionRate }
   })
 
   const checkedInCount = clientRows.filter((c) => c.checkedInToday).length
+
+  // ── Onboarding checklist data ────────────────────────
+  const { data: aiSettings } = await supabase
+    .from('coach_ai_settings')
+    .select('id')
+    .eq('coach_id', user.id)
+    .maybeSingle()
+
+  const { data: habits } = await supabase
+    .from('habits')
+    .select('id')
+    .eq('coach_id', user.id)
+    .limit(1)
+
+  const hasAiSettings = !!aiSettings
+  const hasClients = clientRows.length > 0
+  const hasHabits = (habits?.length ?? 0) > 0
 
   return (
     <div className="flex flex-col gap-6">
@@ -90,8 +101,20 @@ export default async function CoachDashboard() {
             {checkedInCount} of {clientRows.length} clients checked in today
           </p>
         </div>
-        <DigestButton />
+        <div className="flex items-center gap-2 shrink-0">
+          <DigestButton />
+          {profile?.invite_code && (
+            <AddClientModal inviteCode={profile.invite_code} />
+          )}
+        </div>
       </div>
+
+      {/* Onboarding checklist */}
+      <OnboardingBanner
+        hasAiSettings={hasAiSettings}
+        hasClients={hasClients}
+        hasHabits={hasHabits}
+      />
 
       {/* Invite code banner */}
       {profile?.invite_code && (

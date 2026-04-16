@@ -33,6 +33,10 @@ export function DigestButton() {
         return
       }
 
+      // Mark first digest done for onboarding checklist
+      localStorage.setItem('fitcoach_first_digest', '1')
+      window.dispatchEvent(new Event('fitcoach:digest_generated'))
+
       // Stream the text
       const reader = res.body!.getReader()
       const decoder = new TextDecoder()

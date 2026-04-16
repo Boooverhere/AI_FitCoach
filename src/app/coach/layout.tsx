@@ -21,16 +21,29 @@ export default async function CoachLayout({ children }: { children: React.ReactN
   if (!profile) redirect('/onboarding')
   if (profile.role !== 'coach') redirect('/client')
 
+  // Unread notification count (graceful if table doesn't exist yet)
+  let unreadCount = 0
+  try {
+    const { count } = await supabase
+      .from('notifications')
+      .select('id', { count: 'exact', head: true })
+      .eq('coach_id', user.id)
+      .eq('read', false)
+    unreadCount = count ?? 0
+  } catch {
+    // notifications table not yet created — silently skip
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar fullName={profile.full_name} role="coach" />
       <div className="flex flex-1 overflow-hidden">
-        <CoachSidebar />
+        <CoachSidebar unreadNotifications={unreadCount} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 md:pb-6 max-w-6xl mx-auto w-full">
           {children}
         </main>
       </div>
-      <BottomNav role="coach" />
+      <BottomNav role="coach" unreadNotifications={unreadCount} />
     </div>
   )
 }
