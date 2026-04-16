@@ -1,26 +1,107 @@
 @import "tailwindcss";
 
+/* ─── Theme tokens ─────────────────────────────────────── */
+/* :root = light mode (base defaults).                      */
+/* next-themes adds class="dark" to <html> for dark mode,   */
+/* so .dark overrides the light defaults.                   */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-base:     #FFFFFF;
+  --bg-nav:      #F5F5F4;
+  --bg-surface:  #F5F5F4;
+  --bg-elevated: #EBEBEA;
+  --bg-input:    rgba(0, 0, 0, 0.04);
+  --bg-hover:    rgba(0, 0, 0, 0.04);
+  --bg-subtle:   rgba(0, 0, 0, 0.02);
+
+  --fg:    #1A1A1A;
+  --fg-70: rgba(26, 26, 26, 0.72);
+  --fg-60: rgba(26, 26, 26, 0.62);
+  --fg-50: rgba(26, 26, 26, 0.52);
+  --fg-40: rgba(26, 26, 26, 0.46);
+  --fg-30: rgba(26, 26, 26, 0.38);
+  --fg-20: rgba(26, 26, 26, 0.28);
+
+  --border:   rgba(26, 26, 26, 0.14);
+  --border-8: rgba(26, 26, 26, 0.09);
+  --border-5: rgba(26, 26, 26, 0.05);
+
+  /* Accent — light mode: dark readable olive-green */
+  --accent:           #4D7C0F;
+  --accent-hover:     #3F6B0A;
+  --accent-fg:        #4D7C0F;
+  --accent-fg-muted:  #6B9E0F;
+  --accent-on-solid:  #FFFFFF;
+  --accent-wash:      #F1F8E9;
+  --accent-tint:      rgba(77, 124, 15, 0.12);
+  --accent-border:    #A3C75C;
+  --accent-border-sub:rgba(163, 199, 92, 0.55);
+  --accent-ring:      rgba(77, 124, 15, 0.30);
+  --accent-shadow:    rgba(77, 124, 15, 0.18);
+}
+
+.dark {
+  --bg-base:     #0a0a0a;
+  --bg-nav:      #0d0d0d;
+  --bg-surface:  #111111;
+  --bg-elevated: #0f0f0f;
+  --bg-input:    rgba(255, 255, 255, 0.05);
+  --bg-hover:    rgba(255, 255, 255, 0.05);
+  --bg-subtle:   rgba(255, 255, 255, 0.03);
+
+  --fg:    #ededed;
+  --fg-70: rgba(255, 255, 255, 0.70);
+  --fg-60: rgba(255, 255, 255, 0.60);
+  --fg-50: rgba(255, 255, 255, 0.50);
+  --fg-40: rgba(255, 255, 255, 0.40);
+  --fg-30: rgba(255, 255, 255, 0.30);
+  --fg-20: rgba(255, 255, 255, 0.20);
+
+  --border:   rgba(255, 255, 255, 0.10);
+  --border-8: rgba(255, 255, 255, 0.08);
+  --border-5: rgba(255, 255, 255, 0.05);
+
+  /* Accent — dark mode: bright lime on dark */
+  --accent:           #84CC16;
+  --accent-hover:     #a3e635;
+  --accent-fg:        #a3e635;
+  --accent-fg-muted:  #bef264;
+  --accent-on-solid:  #000000;
+  --accent-wash:      rgba(132, 204, 22, 0.06);
+  --accent-tint:      rgba(132, 204, 22, 0.12);
+  --accent-border:    rgba(132, 204, 22, 0.40);
+  --accent-border-sub:rgba(132, 204, 22, 0.20);
+  --accent-ring:      rgba(132, 204, 22, 0.40);
+  --accent-shadow:    rgba(132, 204, 22, 0.20);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Smooth theme transitions ─────────────────────────── */
+*,
+*::before,
+*::after {
+  transition-property: color, background-color, border-color;
+  transition-duration: 200ms;
+  transition-timing-function: ease;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-base);
+  color: var(--fg);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-nav); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--fg-20); }
+
+input[type="checkbox"] {
+  accent-color: var(--accent);
 }
