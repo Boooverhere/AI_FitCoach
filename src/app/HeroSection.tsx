@@ -13,8 +13,9 @@ import {
 const CHARS = 'BPMkcalHzVO₂01%♥~↑↓·89'
 const TEAL = ['#2DD4BF', '#14B8A6', '#0D9488', '#5EEAD4']
 const ORA  = ['#F97316', '#FB923C', '#FDBA74']
-const FS   = 13
-const COL_W = 22
+const FS    = 13
+const COL_W = 30          // wider spacing → fewer columns on wide screens
+const FPS   = 30          // cap canvas at 30fps — halves CPU/GPU draw cost
 
 interface Col {
   x: number; y: number; speed: number; len: number
@@ -30,8 +31,8 @@ function makeCols(w: number, h: number): Col[] {
     x: i * COL_W + COL_W / 2,
     y: (Math.random() - 0.3) * h,
     speed: 0.6 + Math.random() * 1.8,
-    len: 8 + Math.floor(Math.random() * 12),
-    chars: Array.from({ length: 20 }, () => CHARS[Math.floor(Math.random() * CHARS.length)]),
+    len: 6 + Math.floor(Math.random() * 6),  // shorter trails (6–12 vs 8–20)
+    chars: Array.from({ length: 12 }, () => CHARS[Math.floor(Math.random() * CHARS.length)]),
     pal: Math.random() > 0.72 ? ORA : TEAL,
     tick: Math.floor(Math.random() * 12),
     rate: 4 + Math.floor(Math.random() * 8),
@@ -114,6 +115,7 @@ export function HeroSection() {
   const ptclsRef    = useRef<Ptcl[]>([])
   const rafRef      = useRef<number>(0)
   const startRef    = useRef<number>(0)
+  const lastFrameRef = useRef<number>(0)
 
   const [metrics, setMetrics]   = useState<Metrics>(BASE)
   const [aiLine, setAiLine]     = useState('')
@@ -132,7 +134,7 @@ export function HeroSection() {
       canvas.width  = canvas.offsetWidth
       canvas.height = canvas.offsetHeight
       colsRef.current = makeCols(canvas.width, canvas.height)
-      ptclsRef.current = Array.from({ length: 40 }, () =>
+      ptclsRef.current = Array.from({ length: 25 }, () =>
         makePtcl(canvas.width, canvas.height)
       )
       ctx.fillStyle = '#030B0A'
@@ -145,17 +147,30 @@ export function HeroSection() {
 
     startRef.current = performance.now()
 
-    function frame() {
+    function frame(ts: number) {
+      // Throttle to FPS cap
+      if (ts - lastFrameRef.current < 1000 / FPS) {
+        rafRef.current = requestAnimationFrame(frame)
+        return
+      }
+      lastFrameRef.current = ts
+
       const W = canvas.width, H = canvas.height
 
       // Fade trail
-      ctx.fillStyle = 'rgba(3,11,10,0.16)'
+      ctx.fillStyle = 'rgba(3,11,10,0.20)'
       ctx.fillRect(0, 0, W, H)
 
       // Draw columns
       ctx.font = `${FS}px 'Courier New', monospace`
       ctx.textAlign = 'center'
       for (const col of colsRef.current) {
+        // Skip column if its entire trail is outside the canvas
+        if (col.y < -(col.len * FS + 20) || col.y > H + 20) {
+          col.y += col.speed
+          if (col.y > H + col.len * FS) col.y = -col.len * FS
+          continue
+        }
         col.tick++
         if (col.tick >= col.rate) {
           col.tick = 0
