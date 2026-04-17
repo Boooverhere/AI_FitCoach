@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
   Sparkles, ChevronDown, Heart, Flame, Wind, Activity,
-  CheckCircle2, XCircle, Zap,
+  CheckCircle2, XCircle,
 } from 'lucide-react'
+import { CoachCheckinIcon } from '@/components/shared/Logo'
 
 /* ─────────────────────────────────────────────────────────
    Canvas: falling data-stream columns + ambient particles
@@ -370,10 +371,8 @@ export function HeroSection() {
               <div className="flex items-center justify-between px-4 py-3 border-b"
                 style={{ borderColor: 'rgba(45,212,191,0.12)' }}>
                 <div className="flex items-center gap-2">
-                  <div className="h-6 w-6 rounded-lg bg-teal-500/20 flex items-center justify-center">
-                    <Zap className="h-3 w-3 text-teal-400" fill="currentColor" />
-                  </div>
-                  <span className="text-xs font-semibold text-slate-200">FitCoach AI</span>
+                  <CoachCheckinIcon size={20} />
+                  <span className="text-xs font-semibold text-slate-200">Coacheckin</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] font-medium text-teal-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />

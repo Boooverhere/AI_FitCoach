@@ -2,8 +2,9 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { LogOut, Zap } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { ThemeToggle } from './ThemeToggle'
+import { Logo } from './Logo'
 
 interface NavbarProps {
   fullName: string
@@ -23,11 +24,8 @@ export function Navbar({ fullName, role }: NavbarProps) {
   return (
     <nav className="h-16 border-b border-[var(--border-8)] flex items-center px-6 justify-between bg-[var(--bg-nav)]">
       <div className="flex items-center gap-3">
-        <div className="h-8 w-8 rounded-lg bg-[var(--accent)] flex items-center justify-center">
-          <Zap className="h-4 w-4 text-[var(--accent-on-solid)]" fill="currentColor" />
-        </div>
-        <span className="font-bold text-lg tracking-tight">FitCoach</span>
-        <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--accent-tint)] text-[var(--accent-fg)] font-medium uppercase tracking-wider ml-1">
+        <Logo iconSize={26} wordmarkClass="text-[var(--fg)]" />
+        <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--accent-tint)] text-[var(--accent-fg)] font-medium uppercase tracking-wider">
           {role}
         </span>
       </div>

@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Zap } from 'lucide-react'
+import { Logo } from '@/components/shared/Logo'
 import Link from 'next/link'
 
 export default function SignupPage() {
@@ -52,11 +52,9 @@ export default function SignupPage() {
 
       <div className="w-full max-w-sm relative">
         <div className="flex flex-col items-center mb-8">
-          <div className="h-12 w-12 rounded-2xl bg-[var(--accent)] flex items-center justify-center mb-4 shadow-lg shadow-[var(--accent-shadow)]">
-            <Zap className="h-6 w-6 text-[var(--accent-on-solid)]" fill="currentColor" />
-          </div>
+          <Logo iconSize={44} wordmarkClass="text-[var(--fg)] text-xl" className="mb-4" />
           <h1 className="text-2xl font-bold">Create account</h1>
-          <p className="text-[var(--fg-40)] text-sm mt-1">Start your fitness journey today</p>
+          <p className="text-[var(--fg-40)] text-sm mt-1">Start coaching smarter today</p>
         </div>
 
         <form

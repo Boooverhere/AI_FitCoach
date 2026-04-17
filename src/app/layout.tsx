@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'FitCoach – Premium Fitness Coaching',
-  description: 'Track habits, monitor clients, and hit your goals.',
+  title: 'Coacheckin – AI-Powered Fitness Coaching',
+  description: 'Track client habits, monitor health, and get daily AI digests. The intelligent coaching platform built for real coaches.',
+  icons: { icon: '/icon.svg' },
 }
 
 export default function RootLayout({

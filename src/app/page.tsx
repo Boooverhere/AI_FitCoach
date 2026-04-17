@@ -4,9 +4,10 @@ import Link from 'next/link'
 import { useState } from 'react'
 import {
   Bot, LayoutDashboard, Heart, Sparkles, TrendingUp, Users,
-  CheckCircle2, ChevronDown, Dumbbell, ShieldCheck, Upload, QrCode, Zap,
+  CheckCircle2, ChevronDown, Dumbbell, ShieldCheck, Upload, QrCode,
 } from 'lucide-react'
 import { HeroSection } from './HeroSection'
+import { Logo } from '@/components/shared/Logo'
 
 /* ── shared dark-page tokens ────────────────────────────── */
 const BG      = '#030B0A'
@@ -25,12 +26,7 @@ export default function LandingPage() {
         style={{ background: 'rgba(3,11,10,0.88)', borderColor: BORDER }}
       >
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="h-7 w-7 rounded-lg bg-teal-500/20 flex items-center justify-center">
-              <Zap className="h-3.5 w-3.5 text-teal-400" fill="currentColor" />
-            </div>
-            <span className="font-bold text-white tracking-tight">FitCoach AI</span>
-          </div>
+          <Logo iconSize={26} wordmarkClass="text-white" className="shrink-0" />
 
           <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-500">
             {['#how-it-works', '#features', '#about', '#faq'].map((href) => (
@@ -202,12 +198,7 @@ export default function LandingPage() {
       {/* ── Footer ───────────────────────────────────── */}
       <footer className="border-t py-8" style={{ background: BG, borderColor: BORDER }}>
         <div className="max-w-5xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-md bg-teal-500/20 flex items-center justify-center">
-              <Zap className="h-3 w-3 text-teal-400" fill="currentColor" />
-            </div>
-            <span className="font-bold text-slate-300 tracking-tight text-sm">FitCoach AI</span>
-          </div>
+          <Logo iconSize={22} wordmarkClass="text-slate-300 text-sm" />
           <div className="flex items-center gap-6 text-xs text-slate-600">
             <a href="#how-it-works" className="hover:text-slate-400 transition-colors">How it works</a>
             <a href="#features" className="hover:text-slate-400 transition-colors">Features</a>
