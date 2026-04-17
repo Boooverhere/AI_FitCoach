@@ -133,3 +133,9 @@ body {
 input[type="checkbox"] {
   accent-color: var(--accent);
 }
+
+/* ─── Hero waveform scroll ──────────────────────────────── */
+@keyframes waveScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}

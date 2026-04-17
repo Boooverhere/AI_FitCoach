@@ -7,6 +7,7 @@ import {
   CheckCircle2, ChevronDown, Dumbbell, ShieldCheck,
   Upload, Eye, QrCode, Moon, Activity,
 } from 'lucide-react'
+import { HeroSection } from './HeroSection'
 
 export default function LandingPage() {
   return (
@@ -39,42 +40,8 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* ── Hero ────────────────────────────────────── */}
-      <section className="flex flex-col items-center justify-center text-center px-5 py-24 sm:py-36">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-tint)] border border-[var(--accent-border-sub)] text-xs font-semibold text-[var(--accent-fg)] mb-6">
-          <Sparkles className="h-3 w-3" />
-          AI-powered fitness coaching
-        </div>
-
-        <h1 className="text-4xl sm:text-6xl font-extrabold leading-tight tracking-tight max-w-2xl mb-5">
-          Coach smarter.{' '}
-          <span className="text-[var(--accent-fg)]">Let AI do the heavy lifting.</span>
-        </h1>
-
-        <p className="text-[var(--fg-60)] text-lg sm:text-xl max-w-xl mb-10 leading-relaxed">
-          FitCoach AI gives coaches an intelligent command centre — track habits, monitor client health, and get daily AI digests that surface who needs attention and who is crushing it.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center gap-3">
-          <Link
-            href="/signup"
-            className="w-full sm:w-auto px-7 py-3.5 text-base font-semibold rounded-2xl bg-[var(--cta)] hover:bg-[var(--cta-hover)] text-[var(--cta-on-solid)] shadow-lg shadow-[var(--cta-shadow)] transition-all text-center"
-          >
-            Start for free
-          </Link>
-          <Link
-            href="/login"
-            className="w-full sm:w-auto px-7 py-3.5 text-base font-medium rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] text-[var(--fg-70)] transition-all text-center"
-          >
-            Sign in
-          </Link>
-        </div>
-
-        <a href="#how-it-works" className="mt-16 flex flex-col items-center gap-1 text-xs text-[var(--fg-30)] hover:text-[var(--fg-50)] transition-colors">
-          See how it works
-          <ChevronDown className="h-4 w-4 animate-bounce" />
-        </a>
-      </section>
+      {/* ── Animated Hero ───────────────────────────── */}
+      <HeroSection />
 
       {/* ── How it Works ────────────────────────────── */}
       <section id="how-it-works" className="bg-[var(--bg-surface)] border-t border-[var(--border-8)]">
