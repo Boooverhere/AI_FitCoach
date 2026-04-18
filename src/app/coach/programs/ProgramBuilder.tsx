@@ -194,9 +194,12 @@ export function ProgramBuilder({ coachHabits, existingProgram }: Props) {
       if (e2) { setError(e2.message); setSaving(false); return }
     } else {
       // Insert program
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setError('Not authenticated'); setSaving(false); return }
+
       const { data: prog, error: e1 } = await supabase
         .from('programs')
-        .insert({ name, description, duration_weeks: durationWeeks })
+        .insert({ name, description, duration_weeks: durationWeeks, coach_id: user.id })
         .select('id')
         .single()
       if (e1 || !prog) { setError(e1?.message ?? 'Failed to create program'); setSaving(false); return }
@@ -334,7 +337,6 @@ export function ProgramBuilder({ coachHabits, existingProgram }: Props) {
         <div className="flex flex-col gap-4">
           {weeks.map((w, idx) => {
             const prevResolved = idx > 0 ? resolvedHabits(idx - 1) : []
-            const prevSet = new Set(prevResolved)
             const lockedHabits = w.inheritPrev ? prevResolved : []
             const displaySelected = w.habitIds
 
