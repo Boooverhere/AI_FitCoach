@@ -38,12 +38,12 @@ export function CoachCheckinIcon({ size = 28 }: { size?: number }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-label="Coacheckin logo"
     >
-      {/* Dark green rounded square background */}
-      <rect width="32" height="32" rx="7" fill="#052E16" />
+      {/* Dark teal rounded square background */}
+      <rect width="32" height="32" rx="7" fill="#042F2E" />
       {/* Outer ring */}
-      <circle cx="16" cy="16" r="11" stroke="#4ADE80" strokeWidth="1.5" />
+      <circle cx="16" cy="16" r="11" stroke="#2DD4BF" strokeWidth="1.5" />
       {/* Inner filled circle */}
-      <circle cx="16" cy="16" r="7.5" fill="#16A34A" />
+      <circle cx="16" cy="16" r="7.5" fill="#0D9488" />
       {/* White checkmark */}
       <path
         d="M11.5 16.5L14.5 19.5L20.5 13.5"
@@ -52,8 +52,8 @@ export function CoachCheckinIcon({ size = 28 }: { size?: number }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {/* Teal dot at top of outer ring */}
-      <circle cx="16" cy="5" r="1.8" fill="#4ADE80" />
+      {/* Light teal dot at top of outer ring */}
+      <circle cx="16" cy="5" r="1.8" fill="#2DD4BF" />
     </svg>
   )
 }
