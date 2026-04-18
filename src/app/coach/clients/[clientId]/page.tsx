@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Flame, CheckCircle2, XCircle, CalendarDays, Heart, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Flame, Heart, AlertTriangle } from 'lucide-react'
 import { AssignHabitPanel } from './AssignHabitPanel'
+import { ClientDetailTabs } from './ClientDetailTabs'
 
 type HabitRef = { id: string; label: string; icon: string }
 
@@ -64,6 +65,23 @@ export default async function ClientDetailPage({
     .eq('client_id', clientId)
     .order('date', { ascending: false })
     .limit(30)
+
+  // Workout history (last 60 entries, enough for the 8-week chart + list)
+  let workouts: {
+    id: string; date: string; type: string; duration_mins: number
+    effort: number; exercises: unknown; notes: string | null
+  }[] = []
+  try {
+    const { data } = await supabase
+      .from('workouts')
+      .select('id, date, type, duration_mins, effort, exercises, notes')
+      .eq('client_id', clientId)
+      .order('date', { ascending: false })
+      .limit(60)
+    workouts = data ?? []
+  } catch {
+    // workouts table not yet created
+  }
 
   const assignedHabitIds = clientHabits
     .map((ch) => ch.habit?.id)
@@ -133,74 +151,13 @@ export default async function ClientDetailPage({
           />
         </div>
 
-        {/* Right: check-in history */}
-        <div className="lg:col-span-2 bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-[var(--border-8)] flex items-center gap-2">
-            <CalendarDays className="h-4 w-4 text-[var(--fg-40)]" />
-            <h2 className="font-semibold">Check-in history</h2>
-            <span className="ml-auto text-sm text-[var(--fg-40)]">Last 30 days</span>
-          </div>
-
-          {!checkins?.length ? (
-            <div className="p-12 text-center text-[var(--fg-30)] text-sm">
-              No check-ins yet.
-            </div>
-          ) : (
-            <div className="divide-y divide-[var(--border-5)] max-h-[600px] overflow-y-auto">
-              {checkins.map((ci) => {
-                const habitIds: string[] = ci.completed_habits ?? []
-                return (
-                  <div key={ci.date} className="px-6 py-4 hover:bg-[var(--bg-subtle)] transition-colors">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm">
-                            {new Date(ci.date + 'T00:00:00').toLocaleDateString('en-US', {
-                              weekday: 'short',
-                              month: 'short',
-                              day: 'numeric',
-                            })}
-                          </span>
-                          {habitIds.length > 0 ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-[var(--accent-fg)]" />
-                          ) : (
-                            <XCircle className="h-3.5 w-3.5 text-[var(--fg-20)]" />
-                          )}
-                        </div>
-                        {ci.note && (
-                          <p className="text-sm text-[var(--fg-50)] italic line-clamp-2">
-                            &ldquo;{ci.note}&rdquo;
-                          </p>
-                        )}
-                        {/* Habit completion pills */}
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                          {clientHabits.map((ch) => {
-                            if (!ch.habit) return null
-                            const done = habitIds.includes(ch.habit.id)
-                            return (
-                              <span
-                                key={ch.habit.id}
-                                className={`text-xs px-2 py-0.5 rounded-full ${
-                                  done
-                                    ? 'bg-[var(--accent-tint)] text-[var(--accent-fg)]'
-                                    : 'bg-[var(--bg-input)] text-[var(--fg-30)]'
-                                }`}
-                              >
-                                {ch.habit.icon} {ch.habit.label}
-                              </span>
-                            )
-                          })}
-                        </div>
-                      </div>
-                      <span className="text-xs text-[var(--fg-30)] flex-shrink-0">
-                        {habitIds.length}/{clientHabits.length}
-                      </span>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          )}
+        {/* Right: tabbed check-in + workout history */}
+        <div className="lg:col-span-2">
+          <ClientDetailTabs
+            checkins={(checkins ?? []) as { date: string; note: string | null; completed_habits: string[] }[]}
+            workouts={workouts as Parameters<typeof ClientDetailTabs>[0]['workouts']}
+            clientHabits={clientHabits}
+          />
         </div>
       </div>
 

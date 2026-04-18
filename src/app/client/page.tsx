@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { CheckInForm } from './CheckInForm'
+import { WorkoutLogger } from './WorkoutLogger'
 import { Flame, Calendar, TrendingUp, Heart, ChevronRight, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -148,6 +149,9 @@ export default async function ClientDashboard() {
         todayCheckin={todayCheckin ?? null}
         today={today}
       />
+
+      {/* Workout logger */}
+      <WorkoutLogger clientId={user.id} />
     </div>
   )
 }
