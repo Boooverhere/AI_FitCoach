@@ -5,6 +5,7 @@ import { useState } from 'react'
 import {
   Bot, LayoutDashboard, Heart, Sparkles, TrendingUp, Users,
   CheckCircle2, ChevronDown, Dumbbell, ShieldCheck, Upload, QrCode,
+  MessageSquare, Camera, Layers, ClipboardList,
 } from 'lucide-react'
 import { HeroSection } from './HeroSection'
 import { Logo } from '@/components/shared/Logo'
@@ -91,10 +92,10 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto px-5 py-20 sm:py-28">
           <SectionLabel>Features</SectionLabel>
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-white mb-3">
-            Everything a coach needs
+            The full coaching stack
           </h2>
           <p className="text-center text-slate-500 mb-14 max-w-md mx-auto text-sm">
-            Built around real coaching workflows. Designed to keep clients accountable.
+            Programs, workouts, habits, messaging, progress photos, and AI — all in one place.
           </p>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -123,10 +124,10 @@ export default function LandingPage() {
 
           <div className="max-w-2xl mx-auto text-center mb-14">
             <p className="text-slate-400 leading-loose mb-5 text-sm sm:text-base">
-              FitCoach AI was built out of a simple frustration: coaches were spending more time chasing check-ins and writing status updates than actually coaching. We set out to fix that.
+              Coacheckin was built out of a simple frustration: coaches were spending more time chasing check-ins, writing programs in spreadsheets, and sending the same update messages than actually coaching. We set out to fix that.
             </p>
             <p className="text-slate-500 leading-loose text-sm sm:text-base">
-              Whether you coach 3 clients or 300, FitCoach AI scales with you. The AI learns your voice, philosophy, and credentials — so every insight sounds like you, not a generic chatbot.
+              Whether you run online programs or work with clients in person, Coacheckin gives you everything in one place — habit tracking, structured workout plans, progress photos, direct messaging, and AI that speaks in your voice.
             </p>
           </div>
 
@@ -180,7 +181,7 @@ export default function LandingPage() {
             Ready to coach at your best?
           </h2>
           <p className="text-slate-500 mb-10 max-w-sm mx-auto text-sm leading-relaxed">
-            Join coaches already using AI to give every client the attention they deserve.
+            Programs, workouts, habits, messages, and AI insights — everything your clients need, in one place.
           </p>
           <Link
             href="/signup"
@@ -205,7 +206,7 @@ export default function LandingPage() {
             <a href="#faq" className="hover:text-slate-400 transition-colors">FAQ</a>
             <Link href="/login" className="hover:text-slate-400 transition-colors">Sign in</Link>
           </div>
-          <p className="text-xs text-slate-700">&copy; {new Date().getFullYear()} FitCoach AI</p>
+          <p className="text-xs text-slate-700">&copy; {new Date().getFullYear()} Coacheckin</p>
         </div>
       </footer>
 
@@ -250,78 +251,99 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 const steps = [
   {
     title: 'Set up your profile',
-    desc: 'Add your coaching speciality, philosophy, and upload your certificates. The AI learns to speak in your voice.',
+    desc: 'Configure your coaching identity, upload certifications, and build your habit and workout templates. The AI learns your voice and philosophy.',
   },
   {
     title: 'Invite your clients',
-    desc: 'Share your unique invite code. Clients sign up, complete their health profile, and are linked to you instantly.',
+    desc: 'Share your unique invite code. Clients join, fill in their health profile, and are instantly linked to you — ready for their first program.',
   },
   {
-    title: 'Coach with AI superpowers',
-    desc: 'Get daily AI digests, monitor streaks, and let AI surface who needs attention — so you can focus on coaching.',
+    title: 'Coach at full capacity',
+    desc: 'Build week-by-week programs, monitor workouts and habits, message clients directly, and get AI digests that surface who needs you most.',
   },
 ]
 
 const features = [
   {
-    title: 'Custom Habit Builder',
-    desc: 'Create any habit for any client — nutrition, sleep, movement, mindset. Fully tailored to their goals.',
-    icon: Dumbbell,
+    title: 'Program Builder',
+    desc: 'Build multi-week programs with week-by-week habits and structured workout plans. Copy weeks, inherit habits, and assign to any client in seconds.',
+    icon: Layers,
     iconBg: 'bg-teal-500/10',
     iconColor: 'text-teal-400',
   },
   {
+    title: 'Structured Workout Plans',
+    desc: 'Program day-by-day workouts with exercises, sets, reps, weight guidance, rest time, and coaching notes. Clients log actual performance next to the plan.',
+    icon: ClipboardList,
+    iconBg: 'bg-orange-500/10',
+    iconColor: 'text-orange-400',
+  },
+  {
     title: 'Daily Check-ins',
-    desc: "Clients check off habits each day from their phone. Streaks and completion rates update in real time.",
+    desc: "Clients check off their week's habits each day. Streaks and completion rates update in real time. Week auto-advances based on their program start date.",
     icon: CheckCircle2,
     iconBg: 'bg-teal-500/10',
     iconColor: 'text-teal-400',
   },
   {
+    title: 'Direct Messaging',
+    desc: "Real-time WhatsApp-style chat between coach and client. Full inbox with unread badges, message threading, and date separators.",
+    icon: MessageSquare,
+    iconBg: 'bg-blue-500/10',
+    iconColor: 'text-blue-400',
+  },
+  {
+    title: 'Progress Photos',
+    desc: 'Clients upload progress photos with optional weight. Coaches see a photo grid, before/after comparison, and an auto-generated weight trend chart.',
+    icon: Camera,
+    iconBg: 'bg-purple-500/10',
+    iconColor: 'text-purple-400',
+  },
+  {
+    title: 'Workout History',
+    desc: "Clients log free-form workouts (type, duration, RPE, exercises). Coaches see a full history and a weekly volume bar chart across the last 8 weeks.",
+    icon: Dumbbell,
+    iconBg: 'bg-rose-500/10',
+    iconColor: 'text-rose-400',
+  },
+  {
     title: 'AI Daily Digest',
-    desc: "One tap gives you an AI summary of who checked in, who's struggling, and who's on a hot streak.",
+    desc: "One tap gives you an AI summary of who checked in, who's struggling, who's on a hot streak — written in your coaching style.",
     icon: Sparkles,
     iconBg: 'bg-purple-500/10',
     iconColor: 'text-purple-400',
   },
   {
     title: 'Health Profiles',
-    desc: 'Clients log weight, blood pressure, heart rate, blood sugar, cholesterol, and primary fitness goal.',
+    desc: 'Clients log weight, height, BMI, blood pressure, heart rate, blood sugar, body fat, injuries, and medications — all visible to their coach.',
     icon: Heart,
     iconBg: 'bg-red-500/10',
     iconColor: 'text-red-400',
   },
   {
     title: 'Team Dashboard',
-    desc: "See every client's check-in status, streak, and 30-day completion rate in one clean view.",
+    desc: "See every client's check-in status, active program, current week, streak, and 30-day completion rate in one clean view.",
     icon: LayoutDashboard,
     iconBg: 'bg-blue-500/10',
     iconColor: 'text-blue-400',
   },
   {
     title: 'Completion Insights',
-    desc: "Spot trends across 30 days to understand what's working and what isn't — per client.",
+    desc: "Spot habit trends across 30 days. See planned vs actual workout performance side by side for every client.",
     icon: TrendingUp,
     iconBg: 'bg-teal-500/10',
     iconColor: 'text-teal-400',
   },
   {
     title: 'AI Coaching Identity',
-    desc: 'Configure your specialty, philosophy, and communication style. The AI becomes an extension of you.',
+    desc: 'Configure your specialty, philosophy, and communication style. Upload certifications as PDFs — the AI reads them and uses them as context.',
     icon: Bot,
     iconBg: 'bg-orange-500/10',
     iconColor: 'text-orange-400',
   },
   {
-    title: 'Certificate Parsing',
-    desc: 'Upload your credentials as PDFs. The AI reads and summarises them, enriching every response with context.',
-    icon: Upload,
-    iconBg: 'bg-orange-500/10',
-    iconColor: 'text-orange-400',
-  },
-  {
     title: 'Invite Code System',
-    desc: 'Each coach gets a unique invite code. Clients use it during signup and are automatically linked to you.',
+    desc: 'Each coach gets a unique invite code. Clients enter it at signup and are automatically linked. Share via link or copy code.',
     icon: QrCode,
     iconBg: 'bg-indigo-500/10',
     iconColor: 'text-indigo-400',
@@ -354,31 +376,39 @@ const pillars = [
 
 const faqs = [
   {
-    q: 'Who is FitCoach AI for?',
-    a: "Personal trainers, online fitness coaches, and health coaches who manage multiple clients. If you're tracking habits, monitoring client health, or writing weekly summaries manually — this replaces all of that.",
+    q: 'Who is Coacheckin for?',
+    a: "Personal trainers, online fitness coaches, and health coaches who manage multiple clients. If you're building programs in spreadsheets, tracking habits in notes apps, or manually following up on check-ins — this replaces all of that.",
+  },
+  {
+    q: 'How does the Program Builder work?',
+    a: "You create a named program with a duration (e.g. 8 weeks), then configure each week: which habits the client should focus on and what workouts they'll do each day. Each workout day can have exercises with sets, reps, weight guidance, rest time, and coaching notes. You can copy a full week to the next with one click and modify from there. Assign the program to any client with a start date — they'll see their habits and workouts automatically each day.",
+  },
+  {
+    q: 'How do clients log their workouts?',
+    a: "If their program includes a workout for today, they'll see a 'Today's Workout' card on their dashboard showing the planned exercises. They enter their actual sets, reps, and weight used next to each exercise, then tap Complete. Coaches see planned vs actual side by side in the Plan tab on the client detail page.",
+  },
+  {
+    q: 'How does messaging work?',
+    a: "Both coaches and clients have a Messages section with real-time chat. Messages are delivered instantly via Supabase Realtime. Coaches see an inbox with all clients sorted by latest message, unread badges, and message previews.",
   },
   {
     q: 'How does the AI know my coaching style?',
-    a: "You configure your AI Coaching Identity — your speciality, philosophy, communication style, and any red flags to watch for. You can also upload certifications as PDFs, which the AI reads and uses as context. The result sounds like you, not a generic chatbot.",
+    a: "You configure your AI Coaching Identity — your speciality, philosophy, communication style, and red flags to watch for. You can also upload certifications as PDFs which the AI reads and uses as context. Every digest and insight is written in your voice, not a generic chatbot.",
   },
   {
     q: 'How do clients join?',
-    a: "Every coach gets a unique invite code on their dashboard. Share it with your clients — they sign up, enter the code, and are automatically linked to you. They then fill in their health profile so you have full context from day one.",
+    a: "Every coach gets a unique invite code on their dashboard. Share it with your clients — they sign up, enter the code, and are automatically linked to you. They then fill in their health profile and progress photos so you have full context from day one.",
   },
   {
-    q: "Is my clients' health data safe?",
-    a: "Yes. All data is stored in Supabase with row-level security policies — clients can only see their own data, and you can only see data from clients linked to your account.",
+    q: "Is my clients' data safe?",
+    a: "Yes. All data uses Supabase row-level security — clients can only see their own data, and you can only see data from clients linked to your account. Progress photos use signed URLs that expire after one hour.",
   },
   {
     q: 'Can I use it on mobile?',
-    a: 'Absolutely. The app is mobile-first. Coaches get a full dashboard with a bottom nav. Clients have a simple daily check-in that takes under a minute.',
+    a: "Absolutely. The entire app is mobile-first with a bottom navigation bar. Clients can check in, log workouts, upload progress photos, and message you — all in under a minute from their phone.",
   },
   {
-    q: 'What is the AI Daily Digest?',
-    a: 'A one-tap team summary. It tells you who checked in, who is on a streak, who has been slipping, and any patterns worth noting — all written in your coaching style.',
-  },
-  {
-    q: 'Is FitCoach AI free?',
-    a: "You can create an account and get started for free. Sign up to explore the platform with your first clients.",
+    q: 'Is Coacheckin free?',
+    a: "You can create an account and get started for free. Sign up to explore the full platform with your first clients.",
   },
 ]
