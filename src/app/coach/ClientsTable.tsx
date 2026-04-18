@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CheckCircle2, XCircle, Flame, ChevronRight } from 'lucide-react'
+import { CheckCircle2, XCircle, Flame, ChevronRight, Layers } from 'lucide-react'
 
 interface ClientRow {
   id: string
@@ -9,6 +9,7 @@ interface ClientRow {
   checkedInToday: boolean
   streak: number
   completionRate: number
+  program: { name: string; current_week: number; duration_weeks: number } | null
 }
 
 export function ClientsTable({
@@ -68,6 +69,12 @@ export function ClientsTable({
                     <Flame className="h-3 w-3" /> {c.streak}d
                   </span>
                 )}
+                {c.program && (
+                  <span className="flex items-center gap-0.5 text-xs text-blue-400">
+                    <Layers className="h-3 w-3" />
+                    Wk {c.program.current_week}/{c.program.duration_weeks}
+                  </span>
+                )}
                 <div className="flex items-center gap-1.5 ml-auto">
                   <div className="w-16 h-1 bg-[var(--border)] rounded-full overflow-hidden">
                     <div
@@ -93,6 +100,7 @@ export function ClientsTable({
             <tr className="border-b border-[var(--border-5)]">
               <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">Name</th>
               <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">Today</th>
+              <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">Program</th>
               <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">Streak</th>
               <th className="text-left px-6 py-3 text-xs font-medium text-[var(--fg-40)] uppercase tracking-wider">30-day rate</th>
               <th className="px-6 py-3" />
@@ -127,6 +135,24 @@ export function ClientsTable({
                       <XCircle className="h-4 w-4" />
                       <span className="text-sm">Pending</span>
                     </span>
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  {c.program ? (
+                    <div>
+                      <p className="text-sm font-medium leading-none truncate max-w-[140px]">{c.program.name}</p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <div className="w-14 h-1 bg-[var(--border)] rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-blue-400 rounded-full"
+                            style={{ width: `${(c.program.current_week / c.program.duration_weeks) * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-xs text-[var(--fg-40)]">Wk {c.program.current_week}/{c.program.duration_weeks}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-[var(--fg-30)]">—</span>
                   )}
                 </td>
                 <td className="px-6 py-4">

@@ -2,14 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Dumbbell, Bot, Heart, Bell, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, Dumbbell, Heart, Bell, MessageSquare, Layers } from 'lucide-react'
 
 const coachLinks = [
   { href: '/coach',               label: 'Dashboard', icon: LayoutDashboard, exact: true  },
   { href: '/coach/messages',      label: 'Messages',  icon: MessageSquare,   exact: false },
+  { href: '/coach/programs',      label: 'Programs',  icon: Layers,          exact: false },
   { href: '/coach/habits',        label: 'Habits',    icon: Dumbbell,        exact: false },
   { href: '/coach/notifications', label: 'Alerts',    icon: Bell,            exact: false },
-  { href: '/coach/settings/ai',   label: 'AI',        icon: Bot,             exact: false },
 ]
 
 const clientLinks = [

@@ -64,11 +64,69 @@ export default async function ClientDashboard() {
     profileData?.primaryGoal
   )
 
+  // Active program
+  type ActiveProgram = {
+    id: string; current_week: number; status: string; start_date: string
+    program: { name: string; duration_weeks: number }
+    weekHabitIds: string[]
+  }
+  let activeProgram: ActiveProgram | null = null
+  try {
+    const { data: cp } = await supabase
+      .from('client_programs')
+      .select('id, program_id, current_week, status, start_date, program:programs(name, duration_weeks)')
+      .eq('client_id', user.id)
+      .eq('status', 'active')
+      .single()
+
+    if (cp) {
+      type RawCP = {
+        id: string; program_id: string; current_week: number
+        status: string; start_date: string
+        program: { name: string; duration_weeks: number }
+      }
+      const raw = cp as unknown as RawCP
+
+      // Advance week if needed (time-based)
+      const daysSinceStart = Math.floor(
+        (Date.now() - new Date(raw.start_date).getTime()) / (1000 * 60 * 60 * 24)
+      )
+      const expectedWeek = Math.min(
+        Math.floor(daysSinceStart / 7) + 1,
+        raw.program.duration_weeks
+      )
+      if (expectedWeek !== raw.current_week) {
+        await supabase
+          .from('client_programs')
+          .update({ current_week: expectedWeek })
+          .eq('id', raw.id)
+        raw.current_week = expectedWeek
+      }
+
+      // Get current week's habit_ids
+      const { data: weekRow } = await supabase
+        .from('program_weeks')
+        .select('habit_ids')
+        .eq('program_id', raw.program_id)
+        .eq('week_number', raw.current_week)
+        .single()
+
+      activeProgram = {
+        id: raw.id,
+        current_week: raw.current_week,
+        status: raw.status,
+        start_date: raw.start_date,
+        program: raw.program,
+        weekHabitIds: (weekRow?.habit_ids as string[]) ?? [],
+      }
+    }
+  } catch { /* no active program */ }
+
   // Best streak across habits
   const maxStreak = Math.max(0, ...(clientHabits?.map((ch) => ch.streak) ?? [0]))
 
   type HabitRef = { id: string; label: string; icon: string }
-  const habits = (clientHabits ?? [])
+  const allHabits = (clientHabits ?? [])
     .map((ch) => ({
       clientHabitId: ch.id,
       streak: ch.streak,
@@ -77,6 +135,12 @@ export default async function ClientDashboard() {
     .filter((ch): ch is { clientHabitId: string; streak: number; habit: HabitRef } =>
       ch.habit !== null
     )
+
+  // Filter to current week's habits if on a program
+  const habits =
+    activeProgram && activeProgram.weekHabitIds.length > 0
+      ? allHabits.filter((h) => activeProgram!.weekHabitIds.includes(h.habit.id))
+      : allHabits
 
   return (
     <div className="flex flex-col gap-6">
@@ -141,6 +205,43 @@ export default async function ClientDashboard() {
           <p className="text-xs text-[var(--fg-40)]">Days logged</p>
         </div>
       </div>
+
+      {/* Active program banner */}
+      {activeProgram && (
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl px-5 py-4">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <p className="font-semibold text-sm">{activeProgram.program.name}</p>
+              <p className="text-xs text-[var(--fg-40)]">
+                Week {activeProgram.current_week} of {activeProgram.program.duration_weeks}
+              </p>
+            </div>
+            <span className="text-xs px-2.5 py-1 rounded-full bg-[var(--accent-tint)] text-[var(--accent-fg)] border border-[var(--accent-border-sub)] font-semibold">
+              {activeProgram.current_week}/{activeProgram.program.duration_weeks}
+            </span>
+          </div>
+          <div className="h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[var(--accent)] rounded-full transition-all"
+              style={{ width: `${(activeProgram.current_week / activeProgram.program.duration_weeks) * 100}%` }}
+            />
+          </div>
+          <div className="flex gap-0.5 mt-2">
+            {Array.from({ length: activeProgram.program.duration_weeks }, (_, i) => (
+              <div
+                key={i}
+                className={`h-1 flex-1 rounded-full ${
+                  i + 1 < activeProgram!.current_week
+                    ? 'bg-[var(--accent)]'
+                    : i + 1 === activeProgram!.current_week
+                    ? 'bg-[var(--accent)] opacity-50'
+                    : 'bg-[var(--border)]'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Check-in form */}
       <CheckInForm

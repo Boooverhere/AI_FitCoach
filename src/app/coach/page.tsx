@@ -53,6 +53,28 @@ export default async function CoachDashboard() {
     .select('client_id, streak')
     .in('client_id', clientIds.length ? clientIds : ['none'])
 
+  // Active programs for all clients
+  let clientProgramMap: Record<string, { name: string; current_week: number; duration_weeks: number }> = {}
+  if (clientIds.length) {
+    try {
+      const { data: cpRows } = await supabase
+        .from('client_programs')
+        .select('client_id, current_week, status, program:programs(name, duration_weeks)')
+        .in('client_id', clientIds)
+        .eq('status', 'active')
+
+      for (const row of cpRows ?? []) {
+        type PRow = { client_id: string; current_week: number; program: { name: string; duration_weeks: number } }
+        const r = row as unknown as PRow
+        clientProgramMap[r.client_id] = {
+          name: r.program.name,
+          current_week: r.current_week,
+          duration_weeks: r.program.duration_weeks,
+        }
+      }
+    } catch { /* programs table not yet created */ }
+  }
+
   // Build client rows
   const clientRows = (clients ?? []).map((c) => {
     const checkedInToday = todayCheckins?.some((ci) => ci.client_id === c.id) ?? false
@@ -66,7 +88,14 @@ export default async function CoachDashboard() {
     const checkinsForClient = recentCheckins?.filter((ci) => ci.client_id === c.id) ?? []
     const completionRate = Math.round((checkinsForClient.length / 30) * 100)
 
-    return { id: c.id, full_name: c.full_name, checkedInToday, streak, completionRate }
+    return {
+      id: c.id,
+      full_name: c.full_name,
+      checkedInToday,
+      streak,
+      completionRate,
+      program: clientProgramMap[c.id] ?? null,
+    }
   })
 
   const checkedInCount = clientRows.filter((c) => c.checkedInToday).length

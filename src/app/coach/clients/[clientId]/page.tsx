@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowLeft, Flame, Heart, AlertTriangle } from 'lucide-react'
 import { AssignHabitPanel } from './AssignHabitPanel'
 import { ClientDetailTabs } from './ClientDetailTabs'
+import { ProgramControls } from './ProgramControls'
 import type { PhotoRecord } from './ProgressTab'
 
 type HabitRef = { id: string; label: string; icon: string }
@@ -110,6 +111,23 @@ export default async function ClientDetailPage({
     // progress_photos table or bucket not yet created
   }
 
+  // Active program assignment
+  type ActiveProgramType = {
+    id: string; program_id: string; current_week: number; status: string
+    start_date: string; program: { name: string; duration_weeks: number }
+  }
+  let activeProgram: ActiveProgramType | null = null
+  try {
+    const { data: cp } = await supabase
+      .from('client_programs')
+      .select('id, program_id, current_week, status, start_date, program:programs(name, duration_weeks)')
+      .eq('client_id', clientId)
+      .single()
+    if (cp) {
+      activeProgram = cp as unknown as ActiveProgramType
+    }
+  } catch { /* no program assigned */ }
+
   const assignedHabitIds = clientHabits
     .map((ch) => ch.habit?.id)
     .filter((id): id is string => Boolean(id))
@@ -139,8 +157,18 @@ export default async function ClientDetailPage({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: habits + assign */}
+        {/* Left: program + habits + assign */}
         <div className="lg:col-span-1 flex flex-col gap-4">
+          {/* Active program */}
+          {activeProgram && (
+            <ProgramControls
+              assignmentId={activeProgram.id}
+              programName={(activeProgram.program as { name: string; duration_weeks: number }).name}
+              durationWeeks={(activeProgram.program as { name: string; duration_weeks: number }).duration_weeks}
+              currentWeek={activeProgram.current_week}
+              status={activeProgram.status as 'active' | 'paused' | 'completed'}
+            />
+          )}
           {/* Current habits */}
           <div className="bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl p-5">
             <h2 className="font-semibold mb-4">Assigned habits</h2>
