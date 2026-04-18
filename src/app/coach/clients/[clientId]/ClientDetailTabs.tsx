@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { CalendarDays, Dumbbell, CheckCircle2, XCircle } from 'lucide-react'
+import { CalendarDays, Dumbbell, CheckCircle2, XCircle, Camera } from 'lucide-react'
+import { ProgressTab, type PhotoRecord } from './ProgressTab'
 
 /* ── Types ─────────────────────────────────────────────── */
 
@@ -35,6 +36,7 @@ interface Props {
   checkins: CheckIn[]
   workouts: Workout[]
   clientHabits: ClientHabit[]
+  photos: PhotoRecord[]
 }
 
 /* ── Helpers ───────────────────────────────────────────── */
@@ -148,8 +150,8 @@ function WeeklyChart({ workouts }: { workouts: Workout[] }) {
 
 /* ── Component ─────────────────────────────────────────── */
 
-export function ClientDetailTabs({ checkins, workouts, clientHabits }: Props) {
-  const [tab, setTab] = useState<'checkins' | 'workouts'>('checkins')
+export function ClientDetailTabs({ checkins, workouts, clientHabits, photos }: Props) {
+  const [tab, setTab] = useState<'checkins' | 'workouts' | 'progress'>('checkins')
 
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl overflow-hidden">
@@ -159,15 +161,22 @@ export function ClientDetailTabs({ checkins, workouts, clientHabits }: Props) {
           active={tab === 'checkins'}
           onClick={() => setTab('checkins')}
           icon={<CalendarDays className="h-4 w-4" />}
-          label="Check-in History"
+          label="Check-ins"
           count={checkins.length}
         />
         <TabBtn
           active={tab === 'workouts'}
           onClick={() => setTab('workouts')}
           icon={<Dumbbell className="h-4 w-4" />}
-          label="Workout History"
+          label="Workouts"
           count={workouts.length}
+        />
+        <TabBtn
+          active={tab === 'progress'}
+          onClick={() => setTab('progress')}
+          icon={<Camera className="h-4 w-4" />}
+          label="Progress"
+          count={photos.length}
         />
       </div>
 
@@ -283,6 +292,9 @@ export function ClientDetailTabs({ checkins, workouts, clientHabits }: Props) {
           )}
         </>
       )}
+
+      {/* ── Progress tab ──────────────────────── */}
+      {tab === 'progress' && <ProgressTab photos={photos} />}
     </div>
   )
 }

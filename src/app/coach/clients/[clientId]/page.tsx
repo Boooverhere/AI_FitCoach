@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ArrowLeft, Flame, Heart, AlertTriangle } from 'lucide-react'
 import { AssignHabitPanel } from './AssignHabitPanel'
 import { ClientDetailTabs } from './ClientDetailTabs'
+import type { PhotoRecord } from './ProgressTab'
 
 type HabitRef = { id: string; label: string; icon: string }
 
@@ -83,6 +84,32 @@ export default async function ClientDetailPage({
     // workouts table not yet created
   }
 
+  // Progress photos
+  let photos: PhotoRecord[] = []
+  try {
+    const { data: rows } = await supabase
+      .from('progress_photos')
+      .select('id, date, storage_path, weight_kg')
+      .eq('client_id', clientId)
+      .order('date', { ascending: false })
+
+    if (rows?.length) {
+      const paths = rows.map((r) => r.storage_path)
+      const { data: signed } = await supabase.storage
+        .from('progress-photos')
+        .createSignedUrls(paths, 3600)
+
+      photos = rows.map((r, i) => ({
+        id:         r.id,
+        date:       r.date,
+        weight_kg:  r.weight_kg ?? null,
+        signed_url: signed?.[i]?.signedUrl ?? '',
+      }))
+    }
+  } catch {
+    // progress_photos table or bucket not yet created
+  }
+
   const assignedHabitIds = clientHabits
     .map((ch) => ch.habit?.id)
     .filter((id): id is string => Boolean(id))
@@ -157,6 +184,7 @@ export default async function ClientDetailPage({
             checkins={(checkins ?? []) as { date: string; note: string | null; completed_habits: string[] }[]}
             workouts={workouts as Parameters<typeof ClientDetailTabs>[0]['workouts']}
             clientHabits={clientHabits}
+            photos={photos}
           />
         </div>
       </div>
