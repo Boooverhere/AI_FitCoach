@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { CalendarDays, Dumbbell, CheckCircle2, XCircle, Camera } from 'lucide-react'
+import { CalendarDays, Dumbbell, CheckCircle2, XCircle, Camera, ClipboardList } from 'lucide-react'
 import { ProgressTab, type PhotoRecord } from './ProgressTab'
+import { ProgramPlanTab, type PlannedDay, type WorkoutLogEntry } from './ProgramPlanTab'
 
 /* ── Types ─────────────────────────────────────────────── */
 
@@ -37,6 +38,10 @@ interface Props {
   workouts: Workout[]
   clientHabits: ClientHabit[]
   photos: PhotoRecord[]
+  plannedDays?: PlannedDay[]
+  workoutLogs?: WorkoutLogEntry[]
+  programCurrentWeek?: number
+  programName?: string
 }
 
 /* ── Helpers ───────────────────────────────────────────── */
@@ -150,8 +155,9 @@ function WeeklyChart({ workouts }: { workouts: Workout[] }) {
 
 /* ── Component ─────────────────────────────────────────── */
 
-export function ClientDetailTabs({ checkins, workouts, clientHabits, photos }: Props) {
-  const [tab, setTab] = useState<'checkins' | 'workouts' | 'progress'>('checkins')
+export function ClientDetailTabs({ checkins, workouts, clientHabits, photos, plannedDays, workoutLogs, programCurrentWeek, programName }: Props) {
+  const [tab, setTab] = useState<'checkins' | 'workouts' | 'progress' | 'plan'>('checkins')
+  const hasPlan = (plannedDays?.length ?? 0) > 0
 
   return (
     <div className="bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl overflow-hidden">
@@ -178,6 +184,14 @@ export function ClientDetailTabs({ checkins, workouts, clientHabits, photos }: P
           label="Progress"
           count={photos.length}
         />
+        {hasPlan && (
+          <TabBtn
+            active={tab === 'plan'}
+            onClick={() => setTab('plan')}
+            icon={<ClipboardList className="h-4 w-4" />}
+            label="Plan"
+          />
+        )}
       </div>
 
       {/* ── Check-in tab ──────────────────────── */}
@@ -295,6 +309,16 @@ export function ClientDetailTabs({ checkins, workouts, clientHabits, photos }: P
 
       {/* ── Progress tab ──────────────────────── */}
       {tab === 'progress' && <ProgressTab photos={photos} />}
+
+      {/* ── Plan tab ──────────────────────────── */}
+      {tab === 'plan' && (
+        <ProgramPlanTab
+          planned={plannedDays ?? []}
+          logs={workoutLogs ?? []}
+          currentWeek={programCurrentWeek ?? 1}
+          programName={programName ?? ''}
+        />
+      )}
     </div>
   )
 }

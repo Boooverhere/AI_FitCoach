@@ -6,6 +6,7 @@ import { AssignHabitPanel } from './AssignHabitPanel'
 import { ClientDetailTabs } from './ClientDetailTabs'
 import { ProgramControls } from './ProgramControls'
 import type { PhotoRecord } from './ProgressTab'
+import type { PlannedDay, WorkoutLogEntry } from './ProgramPlanTab'
 
 type HabitRef = { id: string; label: string; icon: string }
 
@@ -128,6 +129,35 @@ export default async function ClientDetailPage({
     }
   } catch { /* no program assigned */ }
 
+  // Program workout plan + client logs (for Plan tab)
+  let plannedDays: PlannedDay[] = []
+  let workoutLogs: WorkoutLogEntry[] = []
+  if (activeProgram) {
+    try {
+      const [{ data: pwRows }, { data: logRows }] = await Promise.all([
+        supabase
+          .from('program_workouts')
+          .select('id, week_number, day_of_week, workout_type, exercises')
+          .eq('program_id', activeProgram.program_id)
+          .order('week_number').order('day_of_week'),
+        supabase
+          .from('workout_logs')
+          .select('id, date, completed, program_workout_id, actual_performance')
+          .eq('client_id', clientId)
+          .order('date', { ascending: false })
+          .limit(100),
+      ])
+      plannedDays = (pwRows ?? []).map((r) => ({
+        id: r.id,
+        week_number: r.week_number,
+        day_of_week: r.day_of_week,
+        workout_type: r.workout_type,
+        exercises: (r.exercises ?? []) as PlannedDay['exercises'],
+      }))
+      workoutLogs = (logRows ?? []) as unknown as WorkoutLogEntry[]
+    } catch { /* tables may not exist yet */ }
+  }
+
   const assignedHabitIds = clientHabits
     .map((ch) => ch.habit?.id)
     .filter((id): id is string => Boolean(id))
@@ -213,6 +243,10 @@ export default async function ClientDetailPage({
             workouts={workouts as Parameters<typeof ClientDetailTabs>[0]['workouts']}
             clientHabits={clientHabits}
             photos={photos}
+            plannedDays={plannedDays}
+            workoutLogs={workoutLogs}
+            programCurrentWeek={activeProgram?.current_week}
+            programName={(activeProgram?.program as { name: string } | undefined)?.name}
           />
         </div>
       </div>

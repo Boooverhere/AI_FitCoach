@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { CheckInForm } from './CheckInForm'
 import { WorkoutLogger } from './WorkoutLogger'
+import { TodaysWorkout, type PlannedWorkout } from './TodaysWorkout'
 import { Flame, Calendar, TrendingUp, Heart, ChevronRight, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -121,6 +122,50 @@ export default async function ClientDashboard() {
       }
     }
   } catch { /* no active program */ }
+
+  // Today's planned workout (from program)
+  let todayPlannedWorkout: PlannedWorkout | null = null
+  let todayWorkoutLog: { id: string; completed: boolean; actual_performance: unknown[] } | null = null
+  if (activeProgram) {
+    try {
+      // day_of_week: Mon=0 … Sun=6 (JS getDay: Sun=0, so remap)
+      const jsDay = new Date(today + 'T00:00:00').getDay() // 0=Sun
+      const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1       // Mon=0 … Sun=6
+
+      const { data: pw } = await supabase
+        .from('program_workouts')
+        .select('id, workout_type, exercises')
+        .eq('program_id', (await supabase
+          .from('client_programs')
+          .select('program_id')
+          .eq('client_id', user.id)
+          .single()
+        ).data?.program_id ?? '')
+        .eq('week_number', activeProgram.current_week)
+        .eq('day_of_week', dayOfWeek)
+        .single()
+
+      if (pw && pw.workout_type !== 'Rest') {
+        todayPlannedWorkout = {
+          id: (pw as { id: string }).id,
+          workout_type: pw.workout_type,
+          exercises: (pw.exercises as unknown as PlannedWorkout['exercises']) ?? [],
+        }
+
+        // Check if already logged today
+        const { data: log } = await supabase
+          .from('workout_logs')
+          .select('id, completed, actual_performance')
+          .eq('client_id', user.id)
+          .eq('date', today)
+          .single()
+
+        if (log) {
+          todayWorkoutLog = log as unknown as typeof todayWorkoutLog
+        }
+      }
+    } catch { /* no workout today */ }
+  }
 
   // Best streak across habits
   const maxStreak = Math.max(0, ...(clientHabits?.map((ch) => ch.streak) ?? [0]))
@@ -251,7 +296,17 @@ export default async function ClientDashboard() {
         today={today}
       />
 
-      {/* Workout logger */}
+      {/* Today's program workout */}
+      {todayPlannedWorkout && (
+        <TodaysWorkout
+          clientId={user.id}
+          today={today}
+          planned={todayPlannedWorkout}
+          existingLog={todayWorkoutLog as Parameters<typeof TodaysWorkout>[0]['existingLog']}
+        />
+      )}
+
+      {/* Free-form workout logger */}
       <WorkoutLogger clientId={user.id} />
     </div>
   )

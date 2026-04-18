@@ -14,7 +14,7 @@ export default async function EditProgramPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: program }, { data: weekRows }, { data: coachHabits }] = await Promise.all([
+  const [{ data: program }, { data: weekRows }, { data: workoutRows }, { data: coachHabits }] = await Promise.all([
     supabase
       .from('programs')
       .select('id, name, description, duration_weeks')
@@ -26,6 +26,12 @@ export default async function EditProgramPage({
       .select('week_number, habit_ids')
       .eq('program_id', programId)
       .order('week_number'),
+    supabase
+      .from('program_workouts')
+      .select('week_number, day_of_week, workout_type, exercises')
+      .eq('program_id', programId)
+      .order('week_number')
+      .order('day_of_week'),
     supabase
       .from('habits')
       .select('id, label, icon')
@@ -59,6 +65,12 @@ export default async function EditProgramPage({
           weeks: (weekRows ?? []).map((w) => ({
             week_number: w.week_number,
             habit_ids: (w.habit_ids as string[]) ?? [],
+          })),
+          workouts: (workoutRows ?? []).map((w) => ({
+            week_number: w.week_number,
+            day_of_week: w.day_of_week,
+            workout_type: w.workout_type,
+            exercises: (w.exercises ?? []) as unknown[],
           })),
         }}
       />
