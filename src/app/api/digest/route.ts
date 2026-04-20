@@ -78,7 +78,7 @@ export async function POST() {
     .in('program_id', programIds)
     .eq('day_of_week', dayOfWeek) : { data: [] }
 
-  // Fetch recent workout logs (last 7 days) for streak/volume context
+  // Fetch today's completed workout logs + 7-day volume
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
   const { data: recentLogs } = await supabase
     .from('workout_logs')
@@ -95,10 +95,11 @@ export async function POST() {
           (w) => w.program_id === cp.program_id && w.week_number === cp.current_week
         )
       : null
-    const habits = (checkin?.completed_habits as string[] | undefined) ?? []
-    const workoutCompleted = habits.includes('workout_done')
-    const rpeEntry = habits.find((h: string) => h.startsWith('rpe:'))
-    const rpe = rpeEntry ? parseInt(rpeEntry.split(':')[1]) : null
+    // Workout completion comes from workout_logs (saved by TodaysWorkout component)
+    const todayLog = (recentLogs ?? []).find(
+      (l) => l.client_id === client.id && l.date === today && l.completed
+    )
+    const workoutCompleted = !!todayLog
     const weekLogs = (recentLogs ?? []).filter((l) => l.client_id === client.id)
 
     return {
@@ -109,7 +110,6 @@ export async function POST() {
       todayWorkoutType: todayWorkout?.workout_type ?? (cp ? 'Rest' : null),
       isRestDay: !todayWorkout || todayWorkout.workout_type === 'Rest',
       workoutCompleted,
-      rpe,
       weekWorkoutCount: weekLogs.filter((l) => l.completed).length,
       note: checkin?.note || null,
     }
@@ -145,7 +145,7 @@ ${clientSummaries
       return `• ${c.name}: ❌ No check-in — ${c.todayWorkoutType} session scheduled (Week ${c.programWeek})`
     }
     return `• ${c.name}: ${c.workoutCompleted ? '✅' : '⚠️'} ${c.todayWorkoutType} session (Week ${c.programWeek})
-  - Workout: ${c.workoutCompleted ? 'COMPLETED' : 'NOT marked complete'}${c.rpe != null ? ` · RPE ${c.rpe}/10` : ''}
+  - Workout: ${c.workoutCompleted ? 'COMPLETED' : 'NOT yet logged'}
   - Last 7 days: ${c.weekWorkoutCount} sessions logged${c.note ? `\n  - Note: "${c.note}"` : ''}`
   })
   .join('\n\n')}
