@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { CheckInForm } from './CheckInForm'
 import { WorkoutLogger } from './WorkoutLogger'
 import { TodaysWorkout, type PlannedWorkout } from './TodaysWorkout'
-import { Flame, Calendar, TrendingUp, Heart, ChevronRight, CheckCircle2 } from 'lucide-react'
+import { Flame, Calendar, TrendingUp, Heart, ChevronRight, CheckCircle2, XCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function ClientDashboard() {
@@ -293,15 +293,16 @@ export default async function ClientDashboard() {
         </div>
       )}
 
-      {/* Check-in form */}
+      {/* Workout check-in */}
       <CheckInForm
         clientId={user.id}
-        habits={habits as { clientHabitId: string; streak: number; habit: { id: string; label: string; icon: string } }[]}
         todayCheckin={todayCheckin ?? null}
         today={today}
+        programName={activeProgram?.program.name}
+        todaysWorkoutType={todayPlannedWorkout?.workout_type ?? (activeProgram ? 'Rest' : undefined)}
       />
 
-      {/* Today's program workout */}
+      {/* Today's program workout — log actual performance */}
       {todayPlannedWorkout && (
         <TodaysWorkout
           clientId={user.id}
@@ -309,6 +310,40 @@ export default async function ClientDashboard() {
           planned={todayPlannedWorkout}
           existingLog={todayWorkoutLog as Parameters<typeof TodaysWorkout>[0]['existingLog']}
         />
+      )}
+
+      {/* Habits — separate from check-in */}
+      {habits.length > 0 && (
+        <div className="bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-[var(--border-5)] flex items-center justify-between">
+            <h3 className="font-semibold text-sm">Your habits</h3>
+            <span className="text-xs text-[var(--fg-40)]">
+              {habits.filter(h => todayCheckin?.completed_habits?.includes(h.habit.id)).length}/{habits.length} today
+            </span>
+          </div>
+          <div className="divide-y divide-[var(--border-5)]">
+            {habits.map(({ habit, streak }) => {
+              const done = todayCheckin?.completed_habits?.includes(habit.id)
+              return (
+                <div key={habit.id} className="flex items-center gap-3 px-5 py-3">
+                  <span className="text-lg">{habit.icon}</span>
+                  <span className={`flex-1 text-sm ${done ? 'text-[var(--fg-50)] line-through' : 'text-[var(--fg)]'}`}>
+                    {habit.label}
+                  </span>
+                  {streak > 0 && (
+                    <span className="flex items-center gap-0.5 text-xs text-orange-400">
+                      <Flame className="h-3 w-3" />{streak}d
+                    </span>
+                  )}
+                  {done
+                    ? <CheckCircle2 className="h-4 w-4 text-[var(--accent-fg)] flex-shrink-0" />
+                    : <XCircle className="h-4 w-4 text-[var(--fg-20)] flex-shrink-0" />
+                  }
+                </div>
+              )
+            })}
+          </div>
+        </div>
       )}
 
       {/* Free-form workout logger */}

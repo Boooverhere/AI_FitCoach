@@ -51,6 +51,8 @@ export async function POST() {
   const coachSystemPrompt = buildCoachSystemPrompt(coach.full_name, coachSettings, coachCredentials)
 
   const clientIds = clients.map((c) => c.id)
+  const jsDay = new Date(today + 'T00:00:00').getDay()
+  const dayOfWeek = jsDay === 0 ? 6 : jsDay - 1 // Mon=0 … Sun=6
 
   // Fetch today's check-ins
   const { data: checkins } = await supabase
@@ -59,85 +61,105 @@ export async function POST() {
     .in('client_id', clientIds)
     .eq('date', today)
 
-  // Fetch assigned habits for all clients
-  const { data: clientHabits } = await supabase
-    .from('client_habits')
-    .select('client_id, habit_id, streak, habit:habits(label, icon)')
+  // Fetch active programs for all clients
+  const { data: clientPrograms } = await supabase
+    .from('client_programs')
+    .select('client_id, program_id, current_week, status')
     .in('client_id', clientIds)
+    .eq('status', 'active')
 
-  // Build a structured summary per client for the prompt
+  // Fetch today's scheduled workouts across all active programs
+  const programIds = [...new Set((clientPrograms ?? []).map((cp) => cp.program_id))]
+  const { data: scheduledWorkouts } = programIds.length ? await supabase
+    .from('program_workouts')
+    .select('program_id, week_number, day_of_week, workout_type')
+    .in('program_id', programIds)
+    .eq('day_of_week', dayOfWeek) : { data: [] }
+
+  // Fetch recent workout logs (last 7 days) for streak/volume context
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+  const { data: recentLogs } = await supabase
+    .from('workout_logs')
+    .select('client_id, date, completed')
+    .in('client_id', clientIds)
+    .gte('date', sevenDaysAgo)
+
+  // Build per-client summaries
   const clientSummaries = clients.map((client) => {
     const checkin = checkins?.find((ci) => ci.client_id === client.id)
-    const habits = (clientHabits ?? []).filter((ch) => ch.client_id === client.id)
-    const totalHabits = habits.length
-    const completedHabits = habits.filter((h) =>
-      checkin?.completed_habits?.includes(h.habit_id)
-    )
-    const missedHabits = habits.filter(
-      (h) => !checkin?.completed_habits?.includes(h.habit_id)
-    )
+    const cp = clientPrograms?.find((p) => p.client_id === client.id)
+    const todayWorkout = cp
+      ? scheduledWorkouts?.find(
+          (w) => w.program_id === cp.program_id && w.week_number === cp.current_week
+        )
+      : null
+    const workoutCompleted = checkin?.completed_habits?.includes('workout_done') ?? false
+    const rpeEntry = (checkin?.completed_habits as string[] | undefined)?.find((h: string) => h.startsWith('rpe:'))
+    const rpe = rpeEntry ? parseInt(rpeEntry.split(':')[1]) : null
+    const weekLogs = (recentLogs ?? []).filter((l) => l.client_id === client.id)
 
     return {
       name: client.full_name,
       checkedIn: !!checkin,
-      totalHabits,
-      completedCount: completedHabits.length,
-      completed: completedHabits.map((h) => {
-        const habit = h.habit as unknown as { label: string; icon: string } | null
-        return `${habit?.icon ?? ''} ${habit?.label ?? h.habit_id} (streak: ${h.streak}d)`
-      }),
-      missed: missedHabits.map((h) => {
-        const habit = h.habit as unknown as { label: string; icon: string } | null
-        return `${habit?.icon ?? ''} ${habit?.label ?? h.habit_id}`
-      }),
+      hasProgram: !!cp,
+      programWeek: cp?.current_week ?? null,
+      todayWorkoutType: todayWorkout?.workout_type ?? (cp ? 'Rest' : null),
+      isRestDay: !todayWorkout || todayWorkout.workout_type === 'Rest',
+      workoutCompleted,
+      rpe,
+      weekWorkoutCount: weekLogs.filter((l) => l.completed).length,
       note: checkin?.note || null,
     }
   })
 
   const checkedInCount = clientSummaries.filter((c) => c.checkedIn).length
+  const completedWorkoutCount = clientSummaries.filter((c) => c.workoutCompleted).length
   const dateLabel = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
 
   const prompt = `${coachSystemPrompt}
 
-Today you are reviewing the daily team performance for ${coach.full_name}.
+Today you are reviewing the daily training performance for ${coach.full_name}'s team.
 
 Today is ${dateLabel}.
 
-TEAM CHECK-IN DATA:
+TEAM OVERVIEW:
 - Total clients: ${clients.length}
 - Checked in today: ${checkedInCount}/${clients.length}
+- Workouts completed today: ${completedWorkoutCount}/${clientSummaries.filter(c => !c.isRestDay && c.hasProgram).length} (scheduled sessions)
 
 INDIVIDUAL CLIENT BREAKDOWN:
 ${clientSummaries
   .map((c) => {
-    if (!c.checkedIn) {
-      return `• ${c.name}: ❌ Did NOT check in today (${c.totalHabits} habits assigned)`
+    if (!c.hasProgram) {
+      return `• ${c.name}: No active program assigned`
     }
-    return `• ${c.name}: ✅ Checked in
-  - Completed (${c.completedCount}/${c.totalHabits}): ${c.completed.join(', ') || 'none'}
-  - Missed: ${c.missed.join(', ') || 'none'}
-  - Note: ${c.note ? `"${c.note}"` : '(no note)'}`
+    if (c.isRestDay) {
+      return `• ${c.name}: 🛌 Rest day scheduled — ${c.checkedIn ? `checked in${c.note ? `, note: "${c.note}"` : ''}` : 'did not check in'}`
+    }
+    if (!c.checkedIn) {
+      return `• ${c.name}: ❌ No check-in — ${c.todayWorkoutType} session scheduled (Week ${c.programWeek})`
+    }
+    return `• ${c.name}: ${c.workoutCompleted ? '✅' : '⚠️'} ${c.todayWorkoutType} session (Week ${c.programWeek})
+  - Workout: ${c.workoutCompleted ? 'COMPLETED' : 'NOT marked complete'}${c.rpe != null ? ` · RPE ${c.rpe}/10` : ''}
+  - Last 7 days: ${c.weekWorkoutCount} sessions logged${c.note ? `\n  - Note: "${c.note}"` : ''}`
   })
   .join('\n\n')}
 
 Please provide a concise AI digest with exactly these four sections using markdown:
 
 ## 🏆 Team Performance Summary
-A 2-3 sentence overview of how the team performed today overall.
+A 2-3 sentence overview of today's training across the team.
 
 ## ⚠️ Needs Attention
-List any clients who missed 2 or more habits, or didn't check in at all. If everyone is on track, say so.
+List clients who missed their scheduled session or didn't check in. If everyone is on track, say so.
 
 ## ⭐ Standout Performers
-Highlight clients who completed all their habits or showed impressive streaks. Be specific and motivating.
+Highlight clients who completed tough sessions, hit high RPE, or have been consistent this week. Be specific.
 
 ## 💡 Patterns & Insights
-Surface any recurring themes from the daily notes, habit trends, or anything a coach should know. Keep it brief and actionable.`
+Surface anything useful from the notes, RPE trends, or session completion patterns. Keep it brief and actionable.`
 
   // Stream the response back using ReadableStream
   const apiKey = process.env.OPENAI_API_KEY
