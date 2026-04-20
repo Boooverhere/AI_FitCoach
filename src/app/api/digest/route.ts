@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server'
 import { buildCoachSystemPrompt } from '@/lib/coachSystemPrompt'
 import type { CoachSettings, ParsedCredential } from '@/lib/coachSystemPrompt'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST() {
   try {
   const supabase = await createClient()
@@ -93,8 +95,9 @@ export async function POST() {
           (w) => w.program_id === cp.program_id && w.week_number === cp.current_week
         )
       : null
-    const workoutCompleted = checkin?.completed_habits?.includes('workout_done') ?? false
-    const rpeEntry = (checkin?.completed_habits as string[] | undefined)?.find((h: string) => h.startsWith('rpe:'))
+    const habits = (checkin?.completed_habits as string[] | undefined) ?? []
+    const workoutCompleted = habits.includes('workout_done')
+    const rpeEntry = habits.find((h: string) => h.startsWith('rpe:'))
     const rpe = rpeEntry ? parseInt(rpeEntry.split(':')[1]) : null
     const weekLogs = (recentLogs ?? []).filter((l) => l.client_id === client.id)
 

@@ -40,29 +40,40 @@ export function CheckInForm({ clientId, todayCheckin, today, programName, todays
   const [submitted, setSubmitted] = useState(!!todayCheckin)
   const [editing, setEditing] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const supabase = createClient()
   const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
+    setSaveError('')
 
-    const completedHabits: string[] = []
+    const completedHabits: string[] = ['checked_in']
     if (workoutDone) completedHabits.push('workout_done')
     if (effort > 0) completedHabits.push(`rpe:${effort}`)
 
+    let error
     if (todayCheckin && editing) {
-      await supabase
+      const res = await supabase
         .from('checkins')
         .update({ completed_habits: completedHabits, note })
         .eq('id', todayCheckin.id)
+      error = res.error
     } else {
-      await supabase.from('checkins').upsert({
+      const res = await supabase.from('checkins').upsert({
         client_id: clientId,
         date: today,
         completed_habits: completedHabits,
         note,
       })
+      error = res.error
+    }
+
+    if (error) {
+      setSaveError(error.message)
+      setLoading(false)
+      return
     }
 
     setSubmitted(true)
@@ -193,10 +204,17 @@ export function CheckInForm({ clientId, todayCheckin, today, programName, todays
         />
       </div>
 
+      {/* Save error */}
+      {saveError && (
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-400">
+          {saveError}
+        </div>
+      )}
+
       {/* Submit */}
       {!isLocked && (
         <Button type="submit" loading={loading} size="lg" className="w-full">
-          {editing ? 'Update check-in' : submitted ? 'Submit check-in' : workoutDone ? '🎉 Submit check-in' : 'Submit check-in'}
+          {editing ? 'Update check-in' : workoutDone ? '🎉 Submit check-in' : 'Submit check-in'}
         </Button>
       )}
 
