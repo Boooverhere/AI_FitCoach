@@ -31,7 +31,10 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl
   const publicRoutes = ['/', '/login', '/signup', '/onboarding', '/auth']
-  const isPublic = publicRoutes.some((r) => pathname === r || pathname.startsWith(r + '/'))
+  const isPublic =
+    publicRoutes.some((r) => pathname === r || pathname.startsWith(r + '/')) ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/robots.txt'
 
   if (!user && !isPublic) {
     return NextResponse.redirect(new URL('/login', request.url))
