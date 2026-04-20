@@ -8,7 +8,7 @@ export function Card({ glow, className = '', children, ...props }: CardProps) {
   return (
     <div
       className={`
-        bg-[#111111] border border-white/8 rounded-2xl
+        bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl
         ${glow ? 'shadow-lg shadow-[var(--accent-shadow)]' : ''}
         ${className}
       `}

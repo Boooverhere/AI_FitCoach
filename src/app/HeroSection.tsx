@@ -9,7 +9,7 @@ import {
 import { CoachCheckinIcon } from '@/components/shared/Logo'
 
 /* ─────────────────────────────────────────────────────────
-   Live metrics (lightweight setInterval, no canvas)
+   Live metrics
 ───────────────────────────────────────────────────────── */
 interface Metrics { hr: number; kcal: number; vo2: number; rec: number }
 const BASE: Metrics = { hr: 72, kcal: 1847, vo2: 52.4, rec: 87 }
@@ -47,14 +47,12 @@ export function HeroSection() {
   const [aiIdx, setAiIdx]     = useState(0)
   const [charIdx, setCharIdx] = useState(0)
 
-  /* live metrics */
   useEffect(() => {
     const t0 = Date.now()
     const id = setInterval(() => setMetrics(liveMetrics(Date.now() - t0)), 120)
     return () => clearInterval(id)
   }, [])
 
-  /* AI typing effect */
   useEffect(() => {
     const full = AI_LINES[aiIdx]
     if (charIdx < full.length) {
@@ -76,13 +74,13 @@ export function HeroSection() {
   return (
     <section
       className="relative min-h-screen flex flex-col overflow-hidden"
-      style={{ background: '#030B0A' }}
+      style={{ background: '#faf8f4' }}
     >
-      {/* ── CSS-only ambient glows — zero JS, instant render ── */}
+      {/* ── Ambient glows — adjusted for light bg ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute -top-48 -left-48 w-[700px] h-[700px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(13,148,136,0.20) 0%, transparent 65%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(45,212,191,0.13) 0%, transparent 65%)' }}
         />
         <div
           className="absolute top-1/4 -right-32 w-[560px] h-[560px] rounded-full"
@@ -90,13 +88,13 @@ export function HeroSection() {
         />
         <div
           className="absolute bottom-16 right-1/3 w-[320px] h-[320px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.09) 0%, transparent 65%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.07) 0%, transparent 65%)' }}
         />
         {/* Subtle dot grid */}
         <div
-          className="absolute inset-0 opacity-[0.025]"
+          className="absolute inset-0 opacity-[0.035]"
           style={{
-            backgroundImage: 'radial-gradient(circle, #2DD4BF 1px, transparent 1px)',
+            backgroundImage: 'radial-gradient(circle, #042F2E 1px, transparent 1px)',
             backgroundSize: '32px 32px',
           }}
         />
@@ -109,22 +107,28 @@ export function HeroSection() {
           {/* LEFT — headline + CTAs */}
           <div className="flex flex-col items-start">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full
-              bg-teal-500/15 border border-teal-500/30 text-xs font-semibold text-teal-300 mb-6">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-400 animate-pulse" />
+              border text-xs font-semibold mb-6"
+              style={{
+                background: 'rgba(45,212,191,0.08)',
+                borderColor: 'rgba(45,212,191,0.30)',
+                color: '#0D9488',
+              }}>
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" />
               AI-powered coaching platform
             </div>
 
-            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold leading-[1.08] tracking-tight text-white mb-5">
+            <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold leading-[1.08] tracking-tight mb-5"
+              style={{ color: '#042F2E' }}>
               Coach smarter.{' '}
               <span
                 className="text-transparent bg-clip-text"
-                style={{ backgroundImage: 'linear-gradient(135deg, #2DD4BF 0%, #14B8A6 50%, #F97316 100%)' }}
+                style={{ backgroundImage: 'linear-gradient(135deg, #0D9488 0%, #2DD4BF 50%, #F97316 100%)' }}
               >
                 Let AI do the heavy lifting.
               </span>
             </h1>
 
-            <p className="text-slate-400 text-lg leading-relaxed max-w-lg mb-8">
+            <p className="text-lg leading-relaxed max-w-lg mb-8" style={{ color: '#78716C' }}>
               Coacheckin gives coaches an intelligent command centre — track habits, monitor client progress, and get daily AI digests that surface who needs attention and who is crushing it.
             </p>
 
@@ -135,15 +139,27 @@ export function HeroSection() {
                   transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                 style={{
                   background: 'linear-gradient(135deg, #F97316 0%, #EA6C0A 100%)',
-                  boxShadow: '0 8px 32px rgba(249,115,22,0.35)',
+                  boxShadow: '0 8px 32px rgba(249,115,22,0.30)',
                 }}
               >
                 Start for free
               </Link>
               <Link
                 href="/login"
-                className="px-7 py-3.5 text-base font-medium rounded-2xl text-slate-300 text-center
-                  border border-white/10 hover:border-white/20 hover:text-white bg-white/5 hover:bg-white/10 transition-all"
+                className="px-7 py-3.5 text-base font-medium rounded-2xl text-center transition-all"
+                style={{
+                  color: '#042F2E',
+                  border: '1.5px solid rgba(4,47,46,0.15)',
+                  background: 'rgba(4,47,46,0.03)',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(4,47,46,0.07)'
+                  ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(4,47,46,0.25)'
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(4,47,46,0.03)'
+                  ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(4,47,46,0.15)'
+                }}
               >
                 Sign in
               </Link>
@@ -155,25 +171,26 @@ export function HeroSection() {
                 {['TK', 'SM', 'JR', 'PM'].map((init) => (
                   <div
                     key={init}
-                    className="h-7 w-7 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 border-2 border-[#030B0A] flex items-center justify-center text-[9px] font-bold text-white"
+                    className="h-7 w-7 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 border-2 flex items-center justify-center text-[9px] font-bold text-white"
+                    style={{ borderColor: '#faf8f4' }}
                   >
                     {init}
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-slate-500">Join coaches already coaching at their best</p>
+              <p className="text-xs text-stone-400">Join coaches already coaching at their best</p>
             </div>
           </div>
 
-          {/* RIGHT — dashboard card */}
+          {/* RIGHT — dark dashboard card (the cockpit glimpse) */}
           <div className="hidden lg:flex justify-center items-center">
             <div
               className="w-[340px] rounded-2xl border overflow-hidden"
               style={{
-                background: 'rgba(15,23,42,0.75)',
+                background: 'rgba(10,18,30,0.92)',
                 backdropFilter: 'blur(24px)',
                 borderColor: 'rgba(45,212,191,0.22)',
-                boxShadow: '0 24px 64px rgba(0,0,0,0.55), 0 0 0 1px rgba(45,212,191,0.08)',
+                boxShadow: '0 32px 80px rgba(4,47,46,0.25), 0 0 0 1px rgba(45,212,191,0.08)',
               }}
             >
               {/* Card header */}
@@ -255,7 +272,7 @@ export function HeroSection() {
         <div className="flex justify-center pb-10 relative z-10">
           <a
             href="#how-it-works"
-            className="flex flex-col items-center gap-1 text-xs text-slate-600 hover:text-slate-400 transition-colors"
+            className="flex flex-col items-center gap-1 text-xs text-stone-400 hover:text-stone-600 transition-colors"
           >
             Scroll to explore
             <ChevronDown className="h-4 w-4 animate-bounce" />
@@ -263,21 +280,20 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* ── Live metrics bar ──────────────────────────────── */}
+      {/* ── Dark metrics strip — first glimpse of the product interior ── */}
       <div
         className="relative z-10 border-t"
         style={{
-          background: 'rgba(3,11,10,0.85)',
-          backdropFilter: 'blur(12px)',
+          background: '#042F2E',
           borderColor: 'rgba(45,212,191,0.15)',
         }}
       >
         <div className="max-w-5xl mx-auto px-5 py-4 grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[
-            { icon: Heart,    label: 'Heart Rate',      value: `${metrics.hr}`,                        unit: 'BPM',       color: 'text-red-400',    bg: 'bg-red-500/10'    },
-            { icon: Flame,    label: 'Calories Burned', value: `${metrics.kcal.toLocaleString()}`,      unit: 'kcal',      color: 'text-orange-400', bg: 'bg-orange-500/10' },
-            { icon: Wind,     label: 'VO₂ Max',         value: `${metrics.vo2}`,                        unit: 'ml/kg/min', color: 'text-teal-400',   bg: 'bg-teal-500/10'   },
-            { icon: Activity, label: 'Recovery Score',  value: `${metrics.rec}`,                        unit: '%',         color: 'text-blue-400',   bg: 'bg-blue-500/10'   },
+            { icon: Heart,    label: 'Heart Rate',      value: `${metrics.hr}`,                   unit: 'BPM',       color: 'text-red-400',    bg: 'bg-red-500/10'    },
+            { icon: Flame,    label: 'Calories Burned', value: `${metrics.kcal.toLocaleString()}`, unit: 'kcal',      color: 'text-orange-400', bg: 'bg-orange-500/10' },
+            { icon: Wind,     label: 'VO₂ Max',         value: `${metrics.vo2}`,                   unit: 'ml/kg/min', color: 'text-teal-400',   bg: 'bg-teal-500/10'   },
+            { icon: Activity, label: 'Recovery Score',  value: `${metrics.rec}`,                   unit: '%',         color: 'text-blue-400',   bg: 'bg-blue-500/10'   },
           ].map((m) => (
             <div key={m.label} className="flex items-center gap-3">
               <div className={`h-9 w-9 rounded-xl ${m.bg} flex items-center justify-center shrink-0`}>
@@ -286,9 +302,9 @@ export function HeroSection() {
               <div className="min-w-0">
                 <div className="flex items-baseline gap-1">
                   <span className={`text-lg font-bold tabular-nums ${m.color}`}>{m.value}</span>
-                  <span className="text-[10px] text-slate-600">{m.unit}</span>
+                  <span className="text-[10px] text-teal-900/60" style={{ color: 'rgba(255,255,255,0.30)' }}>{m.unit}</span>
                 </div>
-                <p className="text-[10px] text-slate-600 truncate">{m.label}</p>
+                <p className="text-[10px] truncate" style={{ color: 'rgba(255,255,255,0.30)' }}>{m.label}</p>
               </div>
             </div>
           ))}
