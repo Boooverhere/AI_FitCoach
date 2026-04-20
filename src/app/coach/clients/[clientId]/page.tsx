@@ -113,7 +113,7 @@ export default async function ClientDetailPage({
     // progress_photos table or bucket not yet created
   }
 
-  // Active program assignment
+  // Active program assignment — fetch separately to avoid RLS join failures
   type ActiveProgramType = {
     id: string; program_id: string; current_week: number; status: string
     start_date: string; program: { name: string; duration_weeks: number }
@@ -122,11 +122,18 @@ export default async function ClientDetailPage({
   try {
     const { data: cp } = await supabase
       .from('client_programs')
-      .select('id, program_id, current_week, status, start_date, program:programs(name, duration_weeks)')
+      .select('id, program_id, current_week, status, start_date')
       .eq('client_id', clientId)
-      .single()
+      .order('start_date', { ascending: false })
+      .limit(1)
+      .maybeSingle()
     if (cp) {
-      activeProgram = cp as unknown as ActiveProgramType
+      const { data: prog } = await supabase
+        .from('programs')
+        .select('name, duration_weeks')
+        .eq('id', cp.program_id)
+        .single()
+      activeProgram = { ...cp, program: prog ?? { name: 'Program', duration_weeks: 1 } }
     }
   } catch { /* no program assigned */ }
 

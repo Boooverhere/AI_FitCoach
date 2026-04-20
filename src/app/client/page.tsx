@@ -65,7 +65,8 @@ export default async function ClientDashboard() {
     profileData?.primaryGoal
   )
 
-  // Active program
+  // Active program — fetch client_programs and programs separately to avoid
+  // RLS join failures (programs table may restrict direct client reads)
   type ActiveProgram = {
     id: string; current_week: number; status: string; start_date: string
     program: { name: string; duration_weeks: number }
@@ -75,49 +76,53 @@ export default async function ClientDashboard() {
   try {
     const { data: cp } = await supabase
       .from('client_programs')
-      .select('id, program_id, current_week, status, start_date, program:programs(name, duration_weeks)')
+      .select('id, program_id, current_week, status, start_date')
       .eq('client_id', user.id)
       .eq('status', 'active')
-      .single()
+      .order('start_date', { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
     if (cp) {
-      type RawCP = {
-        id: string; program_id: string; current_week: number
-        status: string; start_date: string
-        program: { name: string; duration_weeks: number }
-      }
-      const raw = cp as unknown as RawCP
+      // Fetch the program details separately
+      const { data: prog } = await supabase
+        .from('programs')
+        .select('name, duration_weeks')
+        .eq('id', cp.program_id)
+        .single()
+
+      const programInfo = prog ?? { name: 'My Program', duration_weeks: 1 }
 
       // Advance week if needed (time-based)
       const daysSinceStart = Math.floor(
-        (Date.now() - new Date(raw.start_date).getTime()) / (1000 * 60 * 60 * 24)
+        (Date.now() - new Date(cp.start_date).getTime()) / (1000 * 60 * 60 * 24)
       )
       const expectedWeek = Math.min(
         Math.floor(daysSinceStart / 7) + 1,
-        raw.program.duration_weeks
+        programInfo.duration_weeks
       )
-      if (expectedWeek !== raw.current_week) {
+      if (expectedWeek !== cp.current_week) {
         await supabase
           .from('client_programs')
           .update({ current_week: expectedWeek })
-          .eq('id', raw.id)
-        raw.current_week = expectedWeek
+          .eq('id', cp.id)
+        cp.current_week = expectedWeek
       }
 
       // Get current week's habit_ids
       const { data: weekRow } = await supabase
         .from('program_weeks')
         .select('habit_ids')
-        .eq('program_id', raw.program_id)
-        .eq('week_number', raw.current_week)
-        .single()
+        .eq('program_id', cp.program_id)
+        .eq('week_number', cp.current_week)
+        .maybeSingle()
 
       activeProgram = {
-        id: raw.id,
-        current_week: raw.current_week,
-        status: raw.status,
-        start_date: raw.start_date,
-        program: raw.program,
+        id: cp.id,
+        current_week: cp.current_week,
+        status: cp.status,
+        start_date: cp.start_date,
+        program: programInfo,
         weekHabitIds: (weekRow?.habit_ids as string[]) ?? [],
       }
     }
