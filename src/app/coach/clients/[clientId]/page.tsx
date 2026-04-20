@@ -5,6 +5,7 @@ import { ArrowLeft, Flame, Heart, AlertTriangle } from 'lucide-react'
 import { AssignHabitPanel } from './AssignHabitPanel'
 import { ClientDetailTabs } from './ClientDetailTabs'
 import { ProgramControls } from './ProgramControls'
+import { AIAdjustProgramModal } from './AIAdjustProgramModal'
 import type { PhotoRecord } from './ProgressTab'
 import type { PlannedDay, WorkoutLogEntry } from './ProgramPlanTab'
 
@@ -199,6 +200,10 @@ export default async function ClientDetailPage({
               status={activeProgram.status as 'active' | 'paused' | 'completed'}
             />
           )}
+
+          {/* AI program adjuster */}
+          <AIAdjustProgramModal clientId={clientId} clientName={client.full_name} />
+
           {/* Current habits */}
           <div className="bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl p-5">
             <h2 className="font-semibold mb-4">Assigned habits</h2>
