@@ -13,14 +13,14 @@ export function InviteCodeBanner({ code }: { code: string }) {
   }
 
   return (
-    <div className="bg-[var(--accent-wash)] border border-[var(--accent-border-sub)] rounded-2xl px-5 py-4 flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="h-9 w-9 rounded-xl bg-[var(--accent-tint)] flex items-center justify-center">
+    <div className="bg-[var(--accent-wash)] border border-[var(--accent-border-sub)] rounded-2xl px-5 py-4 flex items-center justify-between gap-3">
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="h-9 w-9 rounded-xl bg-[var(--accent-tint)] flex items-center justify-center flex-shrink-0">
           <Share2 className="h-4 w-4 text-[var(--accent-fg)]" />
         </div>
-        <div>
+        <div className="min-w-0">
           <p className="text-sm text-[var(--fg-60)]">Your client invite code</p>
-          <p className="text-xl font-mono font-bold tracking-widest text-[var(--accent-fg)]">{code}</p>
+          <p className="text-lg sm:text-xl font-mono font-bold tracking-widest text-[var(--accent-fg)] truncate">{code}</p>
         </div>
       </div>
       <button

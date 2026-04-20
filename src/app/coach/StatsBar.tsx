@@ -32,18 +32,18 @@ export function StatsBar({ totalClients, checkedInToday, avgCompletion }: StatsB
   ]
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-3">
       {stats.map((s) => (
         <div
           key={s.label}
-          className="bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl p-5 flex items-center gap-4"
+          className="bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-2xl p-3 sm:p-5 flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-4"
         >
-          <div className={`h-11 w-11 rounded-xl ${s.bg} flex items-center justify-center flex-shrink-0`}>
-            <s.icon className={`h-5 w-5 ${s.color}`} />
+          <div className={`h-9 w-9 sm:h-11 sm:w-11 rounded-xl ${s.bg} flex items-center justify-center flex-shrink-0`}>
+            <s.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${s.color}`} />
           </div>
-          <div>
-            <p className="text-2xl font-bold">{s.value}</p>
-            <p className="text-sm text-[var(--fg-40)]">{s.label}</p>
+          <div className="text-center sm:text-left">
+            <p className="text-lg sm:text-2xl font-bold leading-none">{s.value}</p>
+            <p className="text-[10px] sm:text-sm text-[var(--fg-40)] mt-0.5 leading-tight">{s.label}</p>
           </div>
         </div>
       ))}

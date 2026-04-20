@@ -59,7 +59,7 @@ export function DigestButton() {
     <>
       <Button onClick={generateDigest} variant="secondary" size="md" className="gap-2">
         <Sparkles className="h-4 w-4 text-[var(--accent-fg)]" />
-        AI Digest
+        <span className="hidden sm:inline">AI Digest</span>
       </Button>
 
       {open && (

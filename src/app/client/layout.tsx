@@ -40,7 +40,7 @@ export default async function ClientLayout({ children }: { children: React.React
       <Navbar fullName={profile.full_name} role="client" />
       <div className="flex flex-1 overflow-hidden">
         <ClientSidebar unreadMessages={unreadMessages} />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 md:pb-6 max-w-2xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-32 md:pb-8 max-w-2xl mx-auto w-full">
           {children}
         </main>
       </div>

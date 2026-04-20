@@ -29,7 +29,10 @@ export function BottomNav({ role, unreadNotifications = 0, unreadMessages = 0 }:
   const links = role === 'coach' ? coachLinks : clientLinks
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-nav)] border-t border-[var(--border-8)] flex items-stretch">
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-nav)] border-t border-[var(--border-8)] flex items-stretch"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    >
       {links.map((l) => {
         const active = l.exact ? pathname === l.href : pathname.startsWith(l.href)
         const badge =

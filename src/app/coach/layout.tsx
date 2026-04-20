@@ -53,7 +53,7 @@ export default async function CoachLayout({ children }: { children: React.ReactN
       <Navbar fullName={profile.full_name} role="coach" />
       <div className="flex flex-1 overflow-hidden">
         <CoachSidebar unreadNotifications={unreadCount} unreadMessages={unreadMessages} />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 md:pb-6 max-w-6xl mx-auto w-full">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-32 md:pb-8 max-w-6xl mx-auto w-full">
           {children}
         </main>
       </div>
