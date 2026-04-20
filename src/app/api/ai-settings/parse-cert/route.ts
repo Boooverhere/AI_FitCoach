@@ -29,6 +29,14 @@ export async function POST(req: Request) {
     if (!base64 || !mediaType) {
       return NextResponse.json({ error: 'Missing file data' }, { status: 400 })
     }
+    const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    if (!ALLOWED_TYPES.includes(mediaType)) {
+      return NextResponse.json({ error: 'Unsupported file type' }, { status: 400 })
+    }
+    // ~10 MB limit in base64 (~7.5 MB raw)
+    if (base64.length > 10_000_000) {
+      return NextResponse.json({ error: 'File too large (max 10 MB)' }, { status: 400 })
+    }
 
     const apiKey = process.env.ANTHROPIC_API_KEY
     if (!apiKey) {

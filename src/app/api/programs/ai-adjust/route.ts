@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import OpenAI from 'openai'
 import { NextResponse } from 'next/server'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 export interface AdjustedExercise {
   name: string
@@ -105,6 +106,18 @@ export async function POST(req: Request) {
     const { programText, clientId } = await req.json() as { programText: string; clientId: string }
     if (!programText?.trim() || !clientId) {
       return NextResponse.json({ error: 'Missing programText or clientId' }, { status: 400 })
+    }
+    if (programText.length > 15_000) {
+      return NextResponse.json({ error: 'Program text too long (max 15,000 characters)' }, { status: 400 })
+    }
+
+    // Rate limit: 5 AI adjustments per 10 minutes per coach
+    const rl = await checkRateLimit(user.id, 'ai-adjust', 120)
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: `Please wait ${rl.retryAfterSeconds}s before adjusting another program` },
+        { status: 429 }
+      )
     }
 
     // Verify client belongs to this coach

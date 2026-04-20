@@ -3,6 +3,7 @@ import OpenAI from 'openai'
 import { NextResponse } from 'next/server'
 import { buildCoachSystemPrompt } from '@/lib/coachSystemPrompt'
 import type { CoachSettings, ParsedCredential } from '@/lib/coachSystemPrompt'
+import { checkRateLimit } from '@/lib/rateLimit'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,6 +28,15 @@ export async function POST() {
 
   if (!coach || coach.role !== 'coach') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  // Rate limit: 1 digest per 2 minutes per coach
+  const rl = await checkRateLimit(user.id, 'digest', 120)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: `Please wait ${rl.retryAfterSeconds}s before generating another digest` },
+      { status: 429 }
+    )
   }
 
   const today = new Date().toISOString().slice(0, 10)

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
+import { checkRateLimit } from '@/lib/rateLimit'
 import { buildCoachSystemPrompt } from '@/lib/coachSystemPrompt'
 
 export async function POST(req: Request) {
@@ -18,6 +19,15 @@ export async function POST(req: Request) {
       .single()
     if (!profile || profile.role !== 'coach') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    // Rate limit: 1 preview per 30 seconds per coach
+    const rl = await checkRateLimit(user.id, 'ai-preview', 30)
+    if (!rl.allowed) {
+      return NextResponse.json(
+        { error: `Please wait ${rl.retryAfterSeconds}s before generating another preview` },
+        { status: 429 }
+      )
     }
 
     const body = await req.json()

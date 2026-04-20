@@ -14,6 +14,12 @@ export async function POST(req: Request) {
   if (!email || !inviteCode) {
     return NextResponse.json({ error: 'Missing email or invite code' }, { status: 400 })
   }
+  if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
+    return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
+  }
+  if (typeof inviteCode !== 'string' || inviteCode.length > 32) {
+    return NextResponse.json({ error: 'Invalid invite code' }, { status: 400 })
+  }
 
   // Get coach name
   const { data: profile } = await supabase
