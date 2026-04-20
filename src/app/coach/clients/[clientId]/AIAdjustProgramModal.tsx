@@ -205,18 +205,17 @@ export function AIAdjustProgramModal({ clientId, clientName }: Props) {
         if (e3) throw new Error(e3.message)
       }
 
-      // 4. Optionally assign to client
+      // 4. Optionally assign to client — delete any existing row first to avoid
+      //    duplicate rows that would break .single() queries on the dashboard
       if (assignNow) {
-        const { error: e4 } = await supabase.from('client_programs').upsert(
-          {
-            client_id: clientId,
-            program_id: programId,
-            status: 'active',
-            current_week: 1,
-            start_date: startDate,
-          },
-          { onConflict: 'client_id' }
-        )
+        await supabase.from('client_programs').delete().eq('client_id', clientId)
+        const { error: e4 } = await supabase.from('client_programs').insert({
+          client_id: clientId,
+          program_id: programId,
+          status: 'active',
+          current_week: 1,
+          start_date: startDate,
+        })
         if (e4) throw new Error(e4.message)
       }
 
