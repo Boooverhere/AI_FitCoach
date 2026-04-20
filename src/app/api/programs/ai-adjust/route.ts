@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import Anthropic from '@anthropic-ai/sdk'
+import OpenAI from 'openai'
 import { NextResponse } from 'next/server'
 
 export interface AdjustedExercise {
@@ -140,51 +140,56 @@ export async function POST(req: Request) {
 - Medications / Conditions: ${hp.medications || 'none reported'}`
       : `CLIENT: ${client.full_name} — no health profile submitted yet. Structure the program as-is with minimal assumptions.`
 
-    const apiKey = process.env.ANTHROPIC_API_KEY
-    if (!apiKey) return NextResponse.json({ error: 'ANTHROPIC_API_KEY not set' }, { status: 500 })
+    const apiKey = process.env.OPENAI_API_KEY
+    if (!apiKey) return NextResponse.json({ error: 'OPENAI_API_KEY not set' }, { status: 500 })
 
-    const anthropic = new Anthropic({ apiKey })
+    const openai = new OpenAI({ apiKey })
 
-    const response = await anthropic.messages.create({
-      model: 'claude-opus-4-6',
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o',
       max_tokens: 8000,
       tools: [
         {
-          name: 'structure_and_adjust_program',
-          description: 'Parse the coach program into structured format and produce a client-adjusted version',
-          input_schema: {
-            type: 'object' as const,
-            properties: {
-              original: { ...programSchema, description: "Coach's program parsed into structured format, unchanged in intent" },
-              adjusted: { ...programSchema, description: "Program adjusted for this specific client's health, goals, and limitations" },
-              changes: {
-                type: 'array' as const,
-                description: 'Every specific modification made in the adjusted version',
-                items: {
-                  type: 'object' as const,
-                  properties: {
-                    description: { type: 'string' as const, description: 'What was changed' },
-                    reason: { type: 'string' as const, description: 'Why, referencing the client data' },
+          type: 'function',
+          function: {
+            name: 'structure_and_adjust_program',
+            description: 'Parse the coach program into structured format and produce a client-adjusted version',
+            parameters: {
+              type: 'object',
+              properties: {
+                original: { ...programSchema, description: "Coach's program parsed into structured format, unchanged in intent" },
+                adjusted: { ...programSchema, description: "Program adjusted for this specific client's health, goals, and limitations" },
+                changes: {
+                  type: 'array',
+                  description: 'Every specific modification made in the adjusted version',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      description: { type: 'string', description: 'What was changed' },
+                      reason: { type: 'string', description: 'Why, referencing the client data' },
+                    },
+                    required: ['description', 'reason'],
                   },
-                  required: ['description', 'reason'],
+                },
+                adjustmentSummary: {
+                  type: 'string',
+                  description: '1-2 sentence overview of the key adjustments made, or confirmation that the program is appropriate as-is',
                 },
               },
-              adjustmentSummary: {
-                type: 'string' as const,
-                description: '1-2 sentence overview of the key adjustments made, or confirmation that the program is appropriate as-is',
-              },
+              required: ['original', 'adjusted', 'changes', 'adjustmentSummary'],
             },
-            required: ['original', 'adjusted', 'changes', 'adjustmentSummary'],
           },
         },
       ],
-      tool_choice: { type: 'tool', name: 'structure_and_adjust_program' },
+      tool_choice: { type: 'function', function: { name: 'structure_and_adjust_program' } },
       messages: [
         {
+          role: 'system',
+          content: `You are an expert fitness program analyst working for coach ${coach.full_name}.`,
+        },
+        {
           role: 'user',
-          content: `You are an expert fitness program analyst working for coach ${coach.full_name}.
-
-${clientContext}
+          content: `${clientContext}
 
 COACH'S PROGRAM TO ANALYSE:
 ---
@@ -202,12 +207,13 @@ Instructions:
       ],
     })
 
-    const toolUse = response.content.find((c) => c.type === 'tool_use')
-    if (!toolUse || toolUse.type !== 'tool_use') {
+    const toolCall = response.choices[0]?.message?.tool_calls?.[0]
+    if (!toolCall || toolCall.type !== 'function') {
       return NextResponse.json({ error: 'AI did not return a structured program' }, { status: 500 })
     }
 
-    return NextResponse.json(toolUse.input as AdjustResult)
+    const result = JSON.parse(toolCall.function.arguments) as AdjustResult
+    return NextResponse.json(result)
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error'
     return NextResponse.json({ error: message }, { status: 500 })
