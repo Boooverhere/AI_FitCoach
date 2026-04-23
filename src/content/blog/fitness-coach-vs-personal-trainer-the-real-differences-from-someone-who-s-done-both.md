@@ -2,7 +2,7 @@
 title: "Fitness Coach vs Personal Trainer: The Real Differences (From Someone Who's Done Both)"
 description: "Fitness coach vs personal trainer differences explained by an 8-year coach — pricing, business models, client results, and which path actually pays better."
 date: "2026-04-23"
-author: "Coacheckin Team"
+author: "Coach Adam"
 tags: ["fitness coach", "personal trainer", "coaching"]
 faq:
   - question: "Can you call yourself a fitness coach without a personal training certification?"
