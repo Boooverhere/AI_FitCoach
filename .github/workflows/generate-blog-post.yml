@@ -1,0 +1,82 @@
+name: Generate Blog Post
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'   # Every Monday at 9 AM UTC
+  workflow_dispatch:        # Manual trigger for testing
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate blog post
+        id: generate
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: node scripts/generate-post.mjs
+
+      - name: Check for new post
+        id: check
+        run: |
+          NEW_FILES=$(git status --porcelain src/content/blog/)
+          if [ -n "$NEW_FILES" ]; then
+            echo "has_new_post=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_new_post=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create branch, commit, and open PR
+        if: steps.check.outputs.has_new_post == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          SLUG="${{ steps.generate.outputs.slug }}"
+          TITLE="${{ steps.generate.outputs.title }}"
+          BRANCH="blog/${DATE}-${SLUG:-post}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add src/content/blog/
+          git commit -m "Add blog post: ${TITLE:-New post ($DATE)}"
+          git push origin "$BRANCH"
+
+          # Write PR body to a temp file to avoid shell quoting issues
+          cat > /tmp/pr-body.md << PREOF
+          ## New Blog Post
+
+          This PR was generated automatically by the weekly blog workflow.
+
+          **Live at:** \`/blog/${SLUG}\` on the next deploy.
+
+          ### Review checklist
+          - [ ] Title and description look good
+          - [ ] Content is accurate and helpful for fitness coaches
+          - [ ] No incorrect claims or factual errors
+          - [ ] CTA at the bottom links correctly
+
+          > Approve to publish, close to discard.
+          PREOF
+
+          gh pr create \
+            --title "Blog: ${TITLE:-New post ($DATE)}" \
+            --body-file /tmp/pr-body.md \
+            --base main \
+            --head "$BRANCH"
