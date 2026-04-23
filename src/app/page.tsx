@@ -38,6 +38,7 @@ export default function LandingPage() {
                 {href.replace('#', '').replace('-', ' ')}
               </a>
             ))}
+            <Link href="/blog" className="hover:text-[#042F2E] transition-colors">Blog</Link>
             <Link href="/contact" className="hover:text-[#042F2E] transition-colors">Contact</Link>
           </nav>
 
