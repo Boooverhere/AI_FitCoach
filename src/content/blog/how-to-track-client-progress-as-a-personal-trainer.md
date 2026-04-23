@@ -4,6 +4,13 @@ description: "Most coaches only track weight. The coaches with the highest reten
 date: "2025-02-10"
 author: "Coacheckin Team"
 tags: ["client progress tracking", "habit tracking", "personal trainer tips"]
+faq:
+  - question: "How often should a personal trainer track client progress?"
+    answer: "Weekly check-ins are the standard for high-retention coaching businesses. Monthly is too infrequent — you miss problems before they become dropouts. Weekly data creates a feedback loop that lets you adjust programming and catch motivation dips early."
+  - question: "What should I track for personal training clients?"
+    answer: "Beyond weight, track workout adherence, sleep quality, energy levels, stress, nutrition consistency, and progress photos. These leading indicators tell you why results are or aren't happening — the scale alone doesn't."
+  - question: "What is the best way to do client check-ins as a personal trainer?"
+    answer: "Automated weekly check-ins with 5-7 structured questions work best. They take clients under 5 minutes to complete, give you consistent data to compare week over week, and remove the friction of chasing clients for updates manually."
 ---
 
 The coaches with the best client retention don't just track weight. They track the full picture — habits, adherence, energy levels, sleep quality, and visual progress. When clients can *see* how much they've improved across every dimension, they stay for years, not months.

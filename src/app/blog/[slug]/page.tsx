@@ -1,12 +1,13 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, ChevronDown } from 'lucide-react'
 import { Logo } from '@/components/shared/Logo'
 import { getPost, getAllPostMetas } from '@/lib/blog'
 import type { Metadata } from 'next'
 
-const BG     = '#faf8f4'
-const BORDER = 'rgba(4,47,46,0.07)'
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.coacheckin.com'
+const BG      = '#faf8f4'
+const BORDER  = 'rgba(4,47,46,0.07)'
 const HEADLINE = '#042F2E'
 const MUTED    = '#78716C'
 
@@ -30,8 +31,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: post.title,
       description: post.description,
       type: 'article',
+      url: `${SITE_URL}/blog/${slug}`,
       publishedTime: post.date,
       authors: [post.author],
+      tags: post.tags,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.description,
     },
   }
 }
@@ -45,8 +53,65 @@ export default async function BlogPostPage({ params }: Props) {
   const post = await getPost(slug)
   if (!post) notFound()
 
+  /* ── JSON-LD ── */
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      '@type': 'Organization',
+      name: 'Coacheckin',
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Coacheckin',
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/icon.svg`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${SITE_URL}/blog/${slug}`,
+    },
+    url: `${SITE_URL}/blog/${slug}`,
+    keywords: post.tags.join(', '),
+  }
+
+  const faqSchema = post.faq.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: post.faq.map((item) => ({
+          '@type': 'Question',
+          name: item.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: item.answer,
+          },
+        })),
+      }
+    : null
+
   return (
     <div className="min-h-screen flex flex-col" style={{ background: BG }}>
+
+      {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       {/* Nav */}
       <header className="border-b backdrop-blur-md sticky top-0 z-40"
@@ -94,7 +159,8 @@ export default async function BlogPostPage({ params }: Props) {
             {post.title}
           </h1>
 
-          <div className="flex items-center gap-3 text-sm mb-10 pb-8 border-b" style={{ color: MUTED, borderColor: BORDER }}>
+          <div className="flex items-center gap-3 text-sm mb-10 pb-8 border-b"
+            style={{ color: MUTED, borderColor: BORDER }}>
             <span>{formatDate(post.date)}</span>
             <span>&middot;</span>
             <span>{post.readingTime} min read</span>
@@ -107,6 +173,32 @@ export default async function BlogPostPage({ params }: Props) {
             className="prose-blog"
             dangerouslySetInnerHTML={{ __html: post.html }}
           />
+
+          {/* FAQ section */}
+          {post.faq.length > 0 && (
+            <section className="mt-14">
+              <h2 className="text-xl font-bold mb-6" style={{ color: HEADLINE }}>
+                Frequently Asked Questions
+              </h2>
+              <div className="flex flex-col gap-3">
+                {post.faq.map((item, i) => (
+                  <details key={i}
+                    className="group rounded-2xl overflow-hidden"
+                    style={{ border: `1px solid ${BORDER}`, background: '#fff' }}>
+                    <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none font-semibold text-sm"
+                      style={{ color: HEADLINE }}>
+                      {item.question}
+                      <ChevronDown className="h-4 w-4 shrink-0 transition-transform group-open:rotate-180"
+                        style={{ color: MUTED }} />
+                    </summary>
+                    <p className="px-5 pb-5 text-sm leading-relaxed" style={{ color: MUTED }}>
+                      {item.answer}
+                    </p>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* CTA */}
           <div className="mt-16 rounded-2xl p-8 text-center"
@@ -127,10 +219,13 @@ export default async function BlogPostPage({ params }: Props) {
       </main>
 
       {/* Footer */}
-      <footer className="border-t py-6 mt-12" style={{ background: '#021815', borderColor: 'rgba(255,255,255,0.06)' }}>
+      <footer className="border-t py-6 mt-12"
+        style={{ background: '#021815', borderColor: 'rgba(255,255,255,0.06)' }}>
         <div className="max-w-5xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <Logo iconSize={20} wordmarkClass="text-white/70 text-sm" />
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>&copy; {new Date().getFullYear()} Coacheckin</p>
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            &copy; {new Date().getFullYear()} Coacheckin
+          </p>
         </div>
       </footer>
 

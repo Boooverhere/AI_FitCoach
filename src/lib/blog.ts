@@ -5,6 +5,11 @@ import { marked } from 'marked'
 
 const POSTS_DIR = path.join(process.cwd(), 'src/content/blog')
 
+export interface FaqItem {
+  question: string
+  answer: string
+}
+
 export interface PostMeta {
   slug: string
   title: string
@@ -13,6 +18,7 @@ export interface PostMeta {
   author: string
   tags: string[]
   readingTime: number
+  faq: FaqItem[]
 }
 
 export interface Post extends PostMeta {
@@ -39,6 +45,7 @@ export function getAllPostMetas(): PostMeta[] {
         author: data.author as string,
         tags: (data.tags as string[]) ?? [],
         readingTime: readingTime(content),
+        faq: (data.faq as FaqItem[]) ?? [],
       }
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -58,6 +65,7 @@ export async function getPost(slug: string): Promise<Post | null> {
     author: data.author as string,
     tags: (data.tags as string[]) ?? [],
     readingTime: readingTime(content),
+    faq: (data.faq as FaqItem[]) ?? [],
     html,
   }
 }
