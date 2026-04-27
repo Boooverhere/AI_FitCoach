@@ -1,8 +1,8 @@
 ---
-title: "Building a Personal Training Brand Online: What Actually Works in 2026"
+title: "Building a Personal Training Brand Online: What Actually Works in 2026?"
 description: "Building a personal training brand online isn't about logos or aesthetic Instagram grids. Here's what 8 years of coaching taught me about what actually moves the needle."
 date: "2026-04-27"
-author: "Coacheckin Team"
+author: "Coach Adam"
 tags: ["personal training brand", "coaching business", "online presence"]
 faq:
   - question: "How long does it take to build a personal training brand online?"
