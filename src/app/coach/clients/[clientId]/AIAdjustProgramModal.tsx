@@ -31,8 +31,8 @@ function ProgramPreview({ program }: { program: AdjustedProgram }) {
 
   return (
     <div className="flex flex-col gap-2">
-      {program.weeks.map((week) => {
-        const workouts = week.workouts.filter((w) => w.workoutType !== 'Rest' && w.exercises.length > 0)
+      {(program.weeks ?? []).map((week) => {
+        const workouts = (week.workouts ?? []).filter((w) => w.workoutType !== 'Rest' && (w.exercises ?? []).length > 0)
         const isOpen = openWeeks.includes(week.weekNumber)
         return (
           <div key={week.weekNumber} className="border border-[var(--border-8)] rounded-xl overflow-hidden">
@@ -52,7 +52,7 @@ function ProgramPreview({ program }: { program: AdjustedProgram }) {
 
             {isOpen && (
               <div className="border-t border-[var(--border-5)] px-4 py-3 flex flex-col gap-3">
-                {week.workouts.map((day) => (
+                {(week.workouts ?? []).map((day) => (
                   <div key={day.dayOfWeek}>
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="text-[11px] font-semibold text-[var(--fg-60)] w-8">{DAY_LABELS[day.dayOfWeek]}</span>
@@ -66,13 +66,13 @@ function ProgramPreview({ program }: { program: AdjustedProgram }) {
                         {day.workoutType}
                       </span>
                     </div>
-                    {day.exercises.length > 0 && (
+                    {(day.exercises ?? []).length > 0 && (
                       <div className="ml-10 flex flex-col gap-1">
-                        {day.exercises.map((ex, i) => (
+                        {(day.exercises ?? []).map((ex, i) => (
                           <div key={i} className="flex items-baseline gap-1.5 text-xs">
-                            <span className="text-[var(--fg-70)] font-medium">{ex.name}</span>
-                            <span className="text-[var(--fg-40)]">{ex.sets}×{ex.reps}</span>
-                            {ex.weight_guidance && <span className="text-[var(--fg-30)]">@ {ex.weight_guidance}</span>}
+                            <span className="text-[var(--fg-70)] font-medium">{ex?.name}</span>
+                            <span className="text-[var(--fg-40)]">{ex?.sets}×{ex?.reps}</span>
+                            {ex?.weight_guidance && <span className="text-[var(--fg-30)]">@ {ex.weight_guidance}</span>}
                           </div>
                         ))}
                       </div>
@@ -143,8 +143,8 @@ export function AIAdjustProgramModal({ clientId, clientName }: Props) {
 
       const data: AdjustResult = await res.json()
       setResult(data)
-      setProgramName(data.adjusted.name)
-      setChosen(data.changes.length > 0 ? 'adjusted' : 'original')
+      setProgramName(data.adjusted?.name ?? '')
+      setChosen((data.changes?.length ?? 0) > 0 ? 'adjusted' : 'original')
       setStep('review')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -168,7 +168,7 @@ export function AIAdjustProgramModal({ clientId, clientName }: Props) {
       const { data: prog, error: e1 } = await supabase
         .from('programs')
         .insert({
-          name: programName || program.name,
+          name: programName || program.name || 'Untitled Program',
           description: `AI-adjusted for ${clientName}${chosen === 'original' ? ' (coach original)' : ''}`,
           duration_weeks: program.durationWeeks,
           coach_id: user.id,
@@ -180,7 +180,7 @@ export function AIAdjustProgramModal({ clientId, clientName }: Props) {
       const programId = prog.id
 
       // 2. Create program_weeks (habit_ids empty — coach can add later)
-      const weekInserts = program.weeks.map((w) => ({
+      const weekInserts = (program.weeks ?? []).map((w) => ({
         program_id: programId,
         week_number: w.weekNumber,
         habit_ids: [] as string[],
@@ -189,9 +189,9 @@ export function AIAdjustProgramModal({ clientId, clientName }: Props) {
       if (e2) throw new Error(e2.message)
 
       // 3. Create program_workouts (only non-rest days with exercises)
-      const workoutInserts = program.weeks.flatMap((w) =>
-        w.workouts
-          .filter((d) => d.workoutType !== 'Rest' && d.exercises.length > 0)
+      const workoutInserts = (program.weeks ?? []).flatMap((w) =>
+        (w.workouts ?? [])
+          .filter((d) => d.workoutType !== 'Rest' && (d.exercises ?? []).length > 0)
           .map((d) => ({
             program_id: programId,
             week_number: w.weekNumber,

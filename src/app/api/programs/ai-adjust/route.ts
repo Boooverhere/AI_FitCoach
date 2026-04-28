@@ -226,6 +226,12 @@ Instructions:
     }
 
     const result = JSON.parse(toolCall.function.arguments) as AdjustResult
+    if (!result.original || !result.adjusted) {
+      return NextResponse.json({ error: 'AI returned incomplete program structure' }, { status: 500 })
+    }
+    result.original.weeks = result.original.weeks ?? []
+    result.adjusted.weeks = result.adjusted.weeks ?? []
+    result.changes = result.changes ?? []
     return NextResponse.json(result)
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Internal server error'
