@@ -201,6 +201,7 @@ export default async function ClientDetailPage({
           {activeProgram && (
             <ProgramControls
               assignmentId={activeProgram.id}
+              programId={activeProgram.program_id}
               programName={(activeProgram.program as { name: string; duration_weeks: number }).name}
               durationWeeks={(activeProgram.program as { name: string; duration_weeks: number }).duration_weeks}
               currentWeek={activeProgram.current_week}

@@ -188,10 +188,10 @@ export function AIAdjustProgramModal({ clientId, clientName }: Props) {
       const { error: e2 } = await supabase.from('program_weeks').insert(weekInserts)
       if (e2) throw new Error(e2.message)
 
-      // 3. Create program_workouts (only non-rest days with exercises)
+      // 3. Create program_workouts (all non-rest days — keep empty-exercise days like cardio)
       const workoutInserts = (program.weeks ?? []).flatMap((w) =>
         (w.workouts ?? [])
-          .filter((d) => d.workoutType !== 'Rest' && (d.exercises ?? []).length > 0)
+          .filter((d) => d.workoutType !== 'Rest')
           .map((d) => ({
             program_id: programId,
             week_number: w.weekNumber,

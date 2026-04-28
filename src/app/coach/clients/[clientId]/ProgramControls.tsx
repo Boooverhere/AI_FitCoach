@@ -1,12 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react'
+import Link from 'next/link'
+import {
+  Play, Pause, RotateCcw, ChevronLeft, ChevronRight,
+  MoreHorizontal, Pencil, UserMinus, Trash2,
+} from 'lucide-react'
 
 interface Props {
   assignmentId: string
+  programId: string
   programName: string
   durationWeeks: number
   currentWeek: number
@@ -15,6 +20,7 @@ interface Props {
 
 export function ProgramControls({
   assignmentId,
+  programId,
   programName,
   durationWeeks,
   currentWeek,
@@ -22,6 +28,16 @@ export function ProgramControls({
 }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
 
   async function update(patch: Record<string, unknown>) {
     setLoading(Object.keys(patch)[0])
@@ -34,6 +50,29 @@ export function ProgramControls({
   async function handleReset() {
     if (!confirm(`Reset "${programName}" back to Week 1?`)) return
     update({ current_week: 1, status: 'active', start_date: new Date().toISOString().slice(0, 10) })
+  }
+
+  async function handleUnassign() {
+    if (!confirm(`Remove "${programName}" from this client? The program will stay in your library.`)) return
+    setLoading('unassign')
+    const supabase = createClient()
+    await supabase.from('client_programs').delete().eq('id', assignmentId)
+    setLoading(null)
+    setMenuOpen(false)
+    router.refresh()
+  }
+
+  async function handleDelete() {
+    if (!confirm(`Permanently delete "${programName}"? This cannot be undone.`)) return
+    setLoading('delete')
+    const supabase = createClient()
+    await supabase.from('client_programs').delete().eq('id', assignmentId)
+    await supabase.from('program_workouts').delete().eq('program_id', programId)
+    await supabase.from('program_weeks').delete().eq('program_id', programId)
+    await supabase.from('programs').delete().eq('id', programId)
+    setLoading(null)
+    setMenuOpen(false)
+    router.refresh()
   }
 
   const isPaused = status === 'paused'
@@ -54,21 +93,61 @@ export function ProgramControls({
           </p>
         </div>
 
-        {/* Pause / resume */}
-        {status !== 'completed' && (
-          <button
-            onClick={() => update({ status: isPaused ? 'active' : 'paused' })}
-            disabled={loading === 'status'}
-            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border transition-colors ${
-              isPaused
-                ? 'bg-[var(--accent-tint)] border-[var(--accent-border-sub)] text-[var(--accent-fg)]'
-                : 'bg-[var(--bg-hover)] border-[var(--border-8)] text-[var(--fg-50)] hover:text-[var(--fg)]'
-            }`}
-          >
-            {isPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
-            {isPaused ? 'Resume' : 'Pause'}
-          </button>
-        )}
+        <div className="flex items-center gap-1.5">
+          {/* Pause / resume */}
+          {status !== 'completed' && (
+            <button
+              onClick={() => update({ status: isPaused ? 'active' : 'paused' })}
+              disabled={loading === 'status'}
+              className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border transition-colors ${
+                isPaused
+                  ? 'bg-[var(--accent-tint)] border-[var(--accent-border-sub)] text-[var(--accent-fg)]'
+                  : 'bg-[var(--bg-hover)] border-[var(--border-8)] text-[var(--fg-50)] hover:text-[var(--fg)]'
+              }`}
+            >
+              {isPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+              {isPaused ? 'Resume' : 'Pause'}
+            </button>
+          )}
+
+          {/* ··· menu */}
+          <div ref={menuRef} className="relative">
+            <button
+              onClick={() => setMenuOpen((o) => !o)}
+              disabled={loading === 'unassign' || loading === 'delete'}
+              className="h-7 w-7 rounded-lg flex items-center justify-center text-[var(--fg-30)] hover:bg-[var(--bg-hover)] hover:text-[var(--fg)] transition-colors disabled:opacity-40"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+            {menuOpen && (
+              <div className="absolute right-0 top-8 z-20 bg-[var(--bg-surface)] border border-[var(--border-8)] rounded-xl shadow-lg py-1 min-w-[170px]">
+                <Link
+                  href={`/coach/programs/${programId}/edit`}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-[var(--fg-60)] hover:bg-[var(--bg-hover)] transition-colors"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                  Edit program
+                </Link>
+                <button
+                  onClick={handleUnassign}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-[var(--fg-60)] hover:bg-[var(--bg-hover)] transition-colors"
+                >
+                  <UserMinus className="h-3.5 w-3.5" />
+                  Unassign from client
+                </button>
+                <div className="h-px bg-[var(--border-5)] mx-2 my-1" />
+                <button
+                  onClick={handleDelete}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Delete program
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Progress bar */}
