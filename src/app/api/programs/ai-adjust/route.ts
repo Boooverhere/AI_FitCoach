@@ -160,7 +160,7 @@ export async function POST(req: Request) {
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
-      max_tokens: 8000,
+      max_tokens: 16000,
       tools: [
         {
           type: 'function',
@@ -215,17 +215,33 @@ Instructions:
 3. List every concrete change you made in "changes" with a specific reason citing the client data
 4. If no health profile exists or the client has no restrictions, make minimal adjustments and note that in adjustmentSummary
 5. For Rest days, use workoutType "Rest" with an empty exercises array
-6. Fill coaching_note with any relevant cue or reminder for each exercise`,
+6. Keep coaching_note brief (max 10 words) — one short cue per exercise`,
         },
       ],
     })
 
-    const toolCall = response.choices[0]?.message?.tool_calls?.[0]
+    const choice = response.choices[0]
+    if (choice?.finish_reason === 'length') {
+      return NextResponse.json(
+        { error: 'Program is too long to process. Try splitting it into fewer weeks or removing some exercises.' },
+        { status: 422 }
+      )
+    }
+
+    const toolCall = choice?.message?.tool_calls?.[0]
     if (!toolCall || toolCall.type !== 'function') {
       return NextResponse.json({ error: 'AI did not return a structured program' }, { status: 500 })
     }
 
-    const result = JSON.parse(toolCall.function.arguments) as AdjustResult
+    let result: AdjustResult
+    try {
+      result = JSON.parse(toolCall.function.arguments) as AdjustResult
+    } catch {
+      return NextResponse.json(
+        { error: 'AI returned malformed JSON — program may be too large. Try a shorter program.' },
+        { status: 500 }
+      )
+    }
     if (!result.original || !result.adjusted) {
       return NextResponse.json({ error: 'AI returned incomplete program structure' }, { status: 500 })
     }
