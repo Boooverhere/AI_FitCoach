@@ -42,48 +42,51 @@ export interface AdjustResult {
   adjustmentSummary: string
 }
 
+// Structured-output-compatible schema — every object has additionalProperties: false
+// so that strict: true can be used and OpenAI guarantees all required fields are present.
+const exerciseItemSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    name:             { type: 'string' },
+    sets:             { type: 'number' },
+    reps:             { type: 'string', description: 'e.g. "10" or "8-12"' },
+    weight_guidance:  { type: 'string', description: 'e.g. "70% 1RM", "bodyweight", "RPE 7", "20 kg"' },
+    rest_seconds:     { type: 'number' },
+    coaching_note:    { type: 'string' },
+  },
+  required: ['name', 'sets', 'reps', 'weight_guidance', 'rest_seconds', 'coaching_note'],
+} as const
+
+const workoutItemSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    dayOfWeek:   { type: 'number', description: '0=Monday 1=Tuesday 2=Wednesday 3=Thursday 4=Friday 5=Saturday 6=Sunday' },
+    workoutType: { type: 'string', enum: ['Rest', 'Strength', 'Cardio', 'HIIT', 'Mobility'] as const },
+    exercises:   { type: 'array', items: exerciseItemSchema },
+  },
+  required: ['dayOfWeek', 'workoutType', 'exercises'],
+} as const
+
+const weekItemSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    weekNumber: { type: 'number' },
+    theme:      { type: 'string', description: 'e.g. Foundation, Progressive Overload, Deload' },
+    workouts:   { type: 'array', items: workoutItemSchema },
+  },
+  required: ['weekNumber', 'theme', 'workouts'],
+} as const
+
 const programSchema = {
   type: 'object',
+  additionalProperties: false,
   properties: {
-    name: { type: 'string' },
+    name:          { type: 'string' },
     durationWeeks: { type: 'number' },
-    weeks: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          weekNumber: { type: 'number' },
-          theme: { type: 'string', description: 'e.g. Foundation, Progressive Overload, Deload' },
-          workouts: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                dayOfWeek: { type: 'number', description: '0=Monday 1=Tuesday 2=Wednesday 3=Thursday 4=Friday 5=Saturday 6=Sunday' },
-                workoutType: { type: 'string', enum: ['Rest', 'Strength', 'Cardio', 'HIIT', 'Mobility'] },
-                exercises: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      name: { type: 'string' },
-                      sets: { type: 'number' },
-                      reps: { type: 'string', description: 'e.g. "10" or "8-12"' },
-                      weight_guidance: { type: 'string', description: 'e.g. "70% 1RM", "bodyweight", "RPE 7", "20 kg"' },
-                      rest_seconds: { type: 'number' },
-                      coaching_note: { type: 'string' },
-                    },
-                    required: ['name', 'sets', 'reps', 'weight_guidance', 'rest_seconds', 'coaching_note'],
-                  },
-                },
-              },
-              required: ['dayOfWeek', 'workoutType', 'exercises'],
-            },
-          },
-        },
-        required: ['weekNumber', 'theme', 'workouts'],
-      },
-    },
+    weeks:         { type: 'array', items: weekItemSchema },
   },
   required: ['name', 'durationWeeks', 'weeks'],
 } as const
@@ -166,9 +169,11 @@ export async function POST(req: Request) {
           type: 'function',
           function: {
             name: 'structure_and_adjust_program',
+            strict: true,
             description: 'Parse the coach program into structured format and produce a client-adjusted version',
             parameters: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 original: { ...programSchema, description: "Coach's program parsed into structured format, unchanged in intent" },
                 adjusted: { ...programSchema, description: "Program adjusted for this specific client's health, goals, and limitations" },
@@ -177,6 +182,7 @@ export async function POST(req: Request) {
                   description: 'Every specific modification made in the adjusted version',
                   items: {
                     type: 'object',
+                    additionalProperties: false,
                     properties: {
                       description: { type: 'string', description: 'What was changed' },
                       reason: { type: 'string', description: 'Why, referencing the client data' },
@@ -242,9 +248,9 @@ Instructions:
         { status: 500 }
       )
     }
-    if (!result.original || !result.adjusted) {
-      return NextResponse.json({ error: 'AI returned incomplete program structure' }, { status: 500 })
-    }
+    // Normalise — strict mode guarantees these exist, but guard anyway
+    result.original  = result.original  ?? { name: 'Original', durationWeeks: 1, weeks: [] }
+    result.adjusted  = result.adjusted  ?? result.original
     result.original.weeks = result.original.weeks ?? []
     result.adjusted.weeks = result.adjusted.weeks ?? []
     result.changes = result.changes ?? []
