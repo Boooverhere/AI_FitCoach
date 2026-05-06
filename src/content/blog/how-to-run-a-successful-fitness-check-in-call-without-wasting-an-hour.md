@@ -2,7 +2,7 @@
 title: "How to Run a Successful Fitness Check-In Call (Without Wasting an Hour)"
 description: "Learn how to run a successful fitness check-in call that actually moves clients forward — from prep to structure to the questions most coaches skip."
 date: "2026-05-04"
-author: "Coacheckin Team"
+author: "Mehdi elyoussoufi"
 tags: ["check-in call", "client communication", "coaching workflow"]
 faq:
   - question: "How long should a fitness check-in call be?"
