@@ -19,6 +19,7 @@ export interface PostMeta {
   tags: string[]
   readingTime: number
   faq: FaqItem[]
+  coverImage?: string
 }
 
 export interface Post extends PostMeta {
@@ -46,6 +47,7 @@ export function getAllPostMetas(): PostMeta[] {
         tags: (data.tags as string[]) ?? [],
         readingTime: readingTime(content),
         faq: (data.faq as FaqItem[]) ?? [],
+        coverImage: (data.coverImage as string) ?? undefined,
       }
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -66,6 +68,7 @@ export async function getPost(slug: string): Promise<Post | null> {
     tags: (data.tags as string[]) ?? [],
     readingTime: readingTime(content),
     faq: (data.faq as FaqItem[]) ?? [],
+    coverImage: (data.coverImage as string) ?? undefined,
     html,
   }
 }

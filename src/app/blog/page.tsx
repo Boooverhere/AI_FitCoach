@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight } from 'lucide-react'
 import { Logo } from '@/components/shared/Logo'
 import { getAllPostMetas } from '@/lib/blog'
@@ -65,9 +66,28 @@ export default function BlogPage() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {posts.map((post) => (
               <Link key={post.slug} href={`/blog/${post.slug}`}
-                className="group flex flex-col rounded-2xl p-6 transition-all hover:shadow-md"
+                className="group flex flex-col rounded-2xl overflow-hidden transition-all hover:shadow-md"
                 style={{ background: '#ffffff', border: `1px solid ${BORDER}` }}>
 
+                {/* Cover thumbnail */}
+                {post.coverImage ? (
+                  <div className="relative w-full aspect-[16/9] overflow-hidden">
+                    <Image
+                      src={post.coverImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full aspect-[16/9] flex items-center justify-center text-2xl"
+                    style={{ background: 'rgba(45,212,191,0.07)' }}>
+                    🏋️
+                  </div>
+                )}
+
+                <div className="flex flex-col flex-1 p-6">
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {post.tags.slice(0, 2).map((tag) => (
@@ -92,6 +112,7 @@ export default function BlogPage() {
                   <span className="flex items-center gap-1 font-medium text-teal-600 group-hover:gap-2 transition-all">
                     Read <ArrowRight className="h-3 w-3" />
                   </span>
+                </div>
                 </div>
               </Link>
             ))}

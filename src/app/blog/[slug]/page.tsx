@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowLeft, ChevronDown } from 'lucide-react'
 import { Logo } from '@/components/shared/Logo'
 import { ShareButtons } from '@/components/blog/ShareButtons'
@@ -36,11 +37,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.date,
       authors: [post.author],
       tags: post.tags,
+      ...(post.coverImage && { images: [`${SITE_URL}${post.coverImage}`] }),
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.description,
+      ...(post.coverImage && { images: [`${SITE_URL}${post.coverImage}`] }),
     },
   }
 }
@@ -62,6 +65,7 @@ export default async function BlogPostPage({ params }: Props) {
     description: post.description,
     datePublished: post.date,
     dateModified: post.date,
+    ...(post.coverImage && { image: `${SITE_URL}${post.coverImage}` }),
     author: {
       '@type': 'Organization',
       name: 'Coacheckin',
@@ -173,6 +177,21 @@ export default async function BlogPostPage({ params }: Props) {
             style={{ borderColor: BORDER }}>
             <ShareButtons url={`${SITE_URL}/blog/${post.slug}`} title={post.title} />
           </div>
+
+          {/* Cover image */}
+          {post.coverImage && (
+            <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-10"
+              style={{ border: `1px solid ${BORDER}` }}>
+              <Image
+                src={post.coverImage}
+                alt={post.title}
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 672px) 100vw, 672px"
+              />
+            </div>
+          )}
 
           {/* Article body */}
           <article
