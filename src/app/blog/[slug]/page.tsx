@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, ChevronDown } from 'lucide-react'
 import { Logo } from '@/components/shared/Logo'
+import { ShareButtons } from '@/components/blog/ShareButtons'
 import { getPost, getAllPostMetas } from '@/lib/blog'
 import type { Metadata } from 'next'
 
@@ -159,8 +160,8 @@ export default async function BlogPostPage({ params }: Props) {
             {post.title}
           </h1>
 
-          <div className="flex items-center gap-3 text-sm mb-10 pb-8 border-b"
-            style={{ color: MUTED, borderColor: BORDER }}>
+          <div className="flex items-center gap-3 text-sm mb-6"
+            style={{ color: MUTED }}>
             <span>{formatDate(post.date)}</span>
             <span>&middot;</span>
             <span>{post.readingTime} min read</span>
@@ -168,11 +169,21 @@ export default async function BlogPostPage({ params }: Props) {
             <span>{post.author}</span>
           </div>
 
+          <div className="flex items-center justify-between flex-wrap gap-3 mb-10 pb-8 border-b"
+            style={{ borderColor: BORDER }}>
+            <ShareButtons url={`${SITE_URL}/blog/${post.slug}`} title={post.title} />
+          </div>
+
           {/* Article body */}
           <article
             className="prose-blog"
             dangerouslySetInnerHTML={{ __html: post.html }}
           />
+
+          {/* Share again after article */}
+          <div className="mt-10 pt-8 border-t" style={{ borderColor: BORDER }}>
+            <ShareButtons url={`${SITE_URL}/blog/${post.slug}`} title={post.title} />
+          </div>
 
           {/* FAQ section */}
           {post.faq.length > 0 && (
