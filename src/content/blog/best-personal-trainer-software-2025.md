@@ -3,6 +3,7 @@ title: "Best Personal Trainer Software in 2025: What to Look For"
 description: "Choosing the right platform can make or break your online coaching business. Here's what the best personal trainer software must include in 2025."
 date: "2025-01-15"
 author: "Coacheckin Team"
+coverImage: /blog/images/Best-Personal-Trainer-Software.png
 tags: ["personal trainer software", "online coaching", "coaching tools"]
 faq:
   - question: "What is the best software for online personal trainers?"
