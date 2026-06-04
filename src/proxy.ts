@@ -58,7 +58,8 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL(dest, request.url))
     }
 
-    // Subscription gate — coaches only, exempt billing page
+    // Subscription gate — only block coaches with an explicitly lapsed status.
+    // No row / 'none' = new coach who hasn't subscribed yet → let through.
     if (
       profile?.role === 'coach' &&
       pathname.startsWith('/coach') &&
@@ -70,8 +71,8 @@ export async function proxy(request: NextRequest) {
         .eq('coach_id', user.id)
         .single()
 
-      const subscribed = ['active', 'pending'].includes(sub?.subscription_status ?? '')
-      if (!subscribed) {
+      const lapsed = ['cancelled', 'expired', 'failed'].includes(sub?.subscription_status ?? '')
+      if (lapsed) {
         return NextResponse.redirect(new URL('/coach/settings/billing', request.url))
       }
     }
