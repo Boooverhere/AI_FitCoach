@@ -2,8 +2,8 @@
 
 /* ─── Theme tokens ─────────────────────────────────────── */
 /* Dark mode is the default (values live in :root).         */
-/* When next-themes adds class="light" to <html>, the       */
-/* .light overrides kick in.                                */
+/* When class="light" is on <html>, the .light overrides    */
+/* kick in.                                                  */
 
 :root {
   /* Teal-tinted dark — richer than flat black */

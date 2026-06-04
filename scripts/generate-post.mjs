@@ -99,7 +99,7 @@ The FAQ must have exactly 3 items. Questions should be things coaches actually s
 const client = new Anthropic()
 
 const response = await client.messages.create({
-  model: 'claude-opus-4-7',
+  model: 'claude-sonnet-4-6',
   max_tokens: 4096,
   thinking: { type: 'adaptive' },
   system: [

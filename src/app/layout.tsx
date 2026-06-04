@@ -87,8 +87,18 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full`}
+      className={`dark ${geistSans.variable} ${geistMono.variable} h-full`}
     >
+      <head>
+        {/* Runs before React hydrates — reads localStorage and sets the theme class.
+            Placed here (server component) so React 19 never sees it as a client script. */}
+        <script
+          id="theme-init"
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('theme');document.documentElement.classList.remove('dark','light');document.documentElement.classList.add(t==='light'?'light':'dark')}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full antialiased">
         <ThemeProvider>{children}</ThemeProvider>
       </body>

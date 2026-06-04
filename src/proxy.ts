@@ -30,7 +30,7 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
-  const publicRoutes = ['/', '/login', '/signup', '/onboarding', '/auth', '/contact', '/blog']
+  const publicRoutes = ['/', '/login', '/signup', '/onboarding', '/auth', '/contact', '/blog', '/api/stripe', '/api/webhooks', '/pricing']
   const isPublic =
     publicRoutes.some((r) => pathname === r || pathname.startsWith(r + '/')) ||
     pathname === '/sitemap.xml' ||
@@ -56,6 +56,24 @@ export async function proxy(request: NextRequest) {
     if (pathname === '/') {
       const dest = profile?.role === 'coach' ? '/coach' : '/client'
       return NextResponse.redirect(new URL(dest, request.url))
+    }
+
+    // Subscription gate — coaches only, exempt billing page
+    if (
+      profile?.role === 'coach' &&
+      pathname.startsWith('/coach') &&
+      pathname !== '/coach/settings/billing'
+    ) {
+      const { data: sub } = await supabase
+        .from('coach_subscriptions')
+        .select('subscription_status')
+        .eq('coach_id', user.id)
+        .single()
+
+      const subscribed = ['active', 'pending'].includes(sub?.subscription_status ?? '')
+      if (!subscribed) {
+        return NextResponse.redirect(new URL('/coach/settings/billing', request.url))
+      }
     }
   }
 

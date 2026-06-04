@@ -145,15 +145,10 @@ export function TodaysWorkout({ clientId, today, planned, existingLog }: Props) 
         <div className="border-t border-[var(--border-8)] px-5 py-4 flex flex-col gap-3">
           {planned.exercises.map((ex, i) => (
             <div key={i} className="bg-[var(--bg-elevated)] border border-[var(--border-5)] rounded-xl p-4">
-              {/* Exercise name + coaching note */}
-              <div className="flex items-start justify-between gap-2 mb-3">
-                <div>
-                  <p className="font-semibold text-sm">{ex.name}</p>
-                  {ex.coaching_note && (
-                    <p className="text-xs text-[var(--fg-40)] italic mt-0.5">{ex.coaching_note}</p>
-                  )}
-                </div>
-                <div className="flex gap-1.5 flex-shrink-0">
+              {/* Exercise name, badges, coaching note — stacked so nothing gets squeezed */}
+              <div className="mb-3">
+                <p className="font-semibold text-sm leading-snug">{ex.name}</p>
+                <div className="flex flex-wrap gap-1.5 mt-1.5">
                   {ex.sets && (
                     <span className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--bg-hover)] text-[var(--fg-50)]">
                       {ex.sets} sets
@@ -175,6 +170,9 @@ export function TodaysWorkout({ clientId, today, planned, existingLog }: Props) 
                     </span>
                   )}
                 </div>
+                {ex.coaching_note && (
+                  <p className="text-xs text-[var(--fg-40)] italic mt-1.5 leading-snug">{ex.coaching_note}</p>
+                )}
               </div>
 
               {/* Actual performance inputs */}
