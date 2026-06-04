@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { createServiceClient } from '@/lib/supabase/service'
 import { dodo } from '@/lib/dodo'
 
 export const dynamic = 'force-dynamic'
@@ -11,8 +10,7 @@ export async function POST() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const db = createServiceClient()
-    const { data: sub } = await db
+    const { data: sub } = await supabase
       .from('coach_subscriptions')
       .select('dodo_customer_id, subscription_status')
       .eq('coach_id', user.id)
