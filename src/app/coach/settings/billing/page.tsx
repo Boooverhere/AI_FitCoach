@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { createServiceClient } from '@/lib/supabase/service'
 import { redirect } from 'next/navigation'
 import { CreditCard, CheckCircle2, AlertTriangle, XCircle, Clock } from 'lucide-react'
 import { BillingActions } from './BillingActions'
@@ -18,7 +17,7 @@ export default async function BillingPage() {
   if (!profile) redirect('/onboarding')
   if (profile.role !== 'coach') redirect('/client')
 
-  const { data: sub } = await createServiceClient()
+  const { data: sub } = await supabase
     .from('coach_subscriptions')
     .select('subscription_status, subscription_period_end')
     .eq('coach_id', user.id)
