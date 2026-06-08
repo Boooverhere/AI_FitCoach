@@ -224,9 +224,16 @@ export default function LandingPage() {
             <a href="#features" className="hover:text-white/60 transition-colors">Features</a>
             <a href="#faq" className="hover:text-white/60 transition-colors">FAQ</a>
             <Link href="/contact" className="hover:text-white/60 transition-colors">Contact</Link>
+            <Link href="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>
             <Link href="/login" className="hover:text-white/60 transition-colors">Sign in</Link>
           </div>
           <p className="text-xs" style={{ color: 'rgba(255,255,255,0.18)' }}>&copy; {new Date().getFullYear()} Coacheckin</p>
+        </div>
+        <div className="max-w-5xl mx-auto px-5 mt-4 text-center">
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.15)' }}>
+            Payments processed by Dodo Payments, authorised reseller of Coacheckin subscriptions.
+          </p>
         </div>
       </footer>
 
@@ -406,38 +413,42 @@ const pillars = [
 const faqs = [
   {
     q: 'Who is Coacheckin for?',
-    a: "Personal trainers, online fitness coaches, and health coaches who manage multiple clients. If you're building programs in spreadsheets, tracking habits in notes apps, or manually following up on check-ins — this replaces all of that.",
+    a: "Personal trainers, online fitness coaches, and health coaches who manage multiple clients. If you're building programs in spreadsheets, tracking habits in notes apps, or manually following up on check-ins — this replaces all of that. The AI handles the time-consuming parts: summarising client progress, flagging who needs attention, and writing updates in your voice so you spend your time coaching, not administrating.",
   },
   {
     q: 'How does the Program Builder work?',
-    a: "You create a named program with a duration (e.g. 8 weeks), then configure each week: which habits the client should focus on and what workouts they'll do each day. Each workout day can have exercises with sets, reps, weight guidance, rest time, and coaching notes. You can copy a full week to the next with one click and modify from there. Assign the program to any client with a start date — they'll see their habits and workouts automatically each day.",
+    a: "You create a named program with a duration (e.g. 8 weeks), then configure each week: which habits the client should focus on and what workouts they'll do each day. Each workout day can have exercises with sets, reps, weight guidance, rest time, and coaching notes. You can copy a full week to the next with one click and modify from there. Assign the program to any client with a start date — the AI tracks their adherence from day one and surfaces patterns you'd otherwise miss.",
   },
   {
     q: 'How do clients log their workouts?',
-    a: "If their program includes a workout for today, they'll see a 'Today's Workout' card on their dashboard showing the planned exercises. They enter their actual sets, reps, and weight used next to each exercise, then tap Complete. Coaches see planned vs actual side by side in the Plan tab on the client detail page.",
+    a: "Clients see a 'Today's Workout' card on their dashboard showing the planned exercises. They enter their actual sets, reps, and weight used next to each exercise, then tap Complete. Coaches see planned vs actual side by side — and the AI uses that performance data in your daily digest to highlight clients who are consistently under- or over-performing their plan.",
   },
   {
     q: 'How does messaging work?',
-    a: "Both coaches and clients have a Messages section with real-time chat. Messages are delivered instantly via Supabase Realtime. Coaches see an inbox with all clients sorted by latest message, unread badges, and message previews.",
+    a: "Both coaches and clients have a real-time inbox with instant message delivery. Before you even open a conversation, the AI digest has already flagged which clients you should check in with today — so every message you send is intentional, not reactive.",
   },
   {
     q: 'How does the AI know my coaching style?',
-    a: "You configure your AI Coaching Identity — your speciality, philosophy, communication style, and red flags to watch for. You can also upload certifications as PDFs which the AI reads and uses as context. Every digest and insight is written in your voice, not a generic chatbot.",
+    a: "You configure your AI Coaching Identity — your speciality, philosophy, communication style, and red flags to watch for. You can also upload certifications as PDFs which the AI reads and uses as context. Every digest, insight, and suggested program adjustment is written in your voice, not a generic chatbot. The longer you use it, the more it sounds like you.",
+  },
+  {
+    q: 'What does the AI Daily Digest actually tell me?',
+    a: "Every day, one tap gives you a full briefing on your entire client roster: who checked in, who skipped, who hit a personal best, who's been struggling for three days straight, and who you haven't heard from in a while. It reads exactly like a message from your most organised assistant — because it's trained on your coaching identity.",
+  },
+  {
+    q: 'Can the AI adjust a client\'s program?',
+    a: "Yes. On any client's program page, you can trigger an AI adjustment — it reviews their recent workout logs, habit completion rates, and health profile, then suggests specific changes to the plan with reasoning. You approve or modify before anything is applied. You stay in control; the AI does the analysis.",
   },
   {
     q: 'How do clients join?',
-    a: "Every coach gets a unique invite code on their dashboard. Share it with your clients — they sign up, enter the code, and are automatically linked to you. They then fill in their health profile and progress photos so you have full context from day one.",
+    a: "Every coach gets a unique invite code. Clients sign up, enter the code, and are automatically linked to you. They fill in their health profile — injuries, medications, goals, metrics — and the AI immediately has that context for every future insight and program suggestion.",
   },
   {
     q: "Is my clients' data safe?",
-    a: "Yes. All data uses Supabase row-level security — clients can only see their own data, and you can only see data from clients linked to your account. Progress photos use signed URLs that expire after one hour.",
-  },
-  {
-    q: 'Can I use it on mobile?',
-    a: "Absolutely. The entire app is mobile-first with a bottom navigation bar. Clients can check in, log workouts, upload progress photos, and message you — all in under a minute from their phone.",
+    a: "Yes. All data uses row-level security — clients can only see their own data, and you can only see data from clients linked to your account. Progress photos are served via signed URLs that expire after one hour. The AI never trains on your client data.",
   },
   {
     q: 'Is Coacheckin free?',
-    a: "You can create an account and get started for free. Sign up to explore the full platform with your first clients.",
+    a: "You can create an account and explore the full platform for free. The AI features — daily digest, program adjustments, coaching identity — are all included in the paid plan at $19/month.",
   },
 ]

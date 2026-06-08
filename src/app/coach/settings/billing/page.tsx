@@ -63,7 +63,7 @@ export default async function BillingPage() {
             </li>
           ))}
         </ul>
-        <p className="mt-4 text-xs text-[var(--fg-30)]">$19 / month · Cancel anytime</p>
+        <p className="mt-4 text-xs text-[var(--fg-30)]">$19 / month · Cancel anytime · Cancellations must be submitted at least 48 hours before your next billing date</p>
       </div>
     </div>
   )

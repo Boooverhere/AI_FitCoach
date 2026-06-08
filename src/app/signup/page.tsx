@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [agreed, setAgreed] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -87,13 +88,29 @@ export default function SignupPage() {
             required
           />
 
+          <label className="flex items-start gap-2.5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-stone-300 accent-teal-600 shrink-0"
+              required
+            />
+            <span className="text-xs text-[var(--fg-40)] leading-relaxed">
+              I agree to the{' '}
+              <Link href="/terms" target="_blank" className="text-[var(--accent-fg)] hover:underline font-medium">Terms of Service</Link>
+              {' '}and{' '}
+              <Link href="/privacy" target="_blank" className="text-[var(--accent-fg)] hover:underline font-medium">Privacy Policy</Link>
+            </span>
+          </label>
+
           {error && (
             <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
 
-          <Button type="submit" loading={loading} size="lg" className="mt-1 w-full">
+          <Button type="submit" loading={loading} size="lg" className="mt-1 w-full" disabled={!agreed}>
             Create account
           </Button>
         </form>
