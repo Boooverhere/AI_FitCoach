@@ -5,7 +5,7 @@ import { useState } from 'react'
 import {
   Bot, LayoutDashboard, Heart, Sparkles, TrendingUp, Users,
   CheckCircle2, ChevronDown, Dumbbell, ShieldCheck, QrCode,
-  MessageSquare, Camera, Layers, ClipboardList,
+  MessageSquare, Camera, Layers, ClipboardList, Menu, X,
 } from 'lucide-react'
 import { HeroSection } from './HeroSection'
 import { Logo } from '@/components/shared/Logo'
@@ -19,9 +19,58 @@ const CARD_BG  = '#ffffff'
 const HEADLINE = '#042F2E'
 const MUTED    = '#78716C'
 
+const NAV_LINKS = [
+  { href: '#how-it-works', label: 'How it works' },
+  { href: '#features',     label: 'Features' },
+  { href: '#about',        label: 'About' },
+  { href: '#faq',          label: 'FAQ' },
+  { href: '/pricing',      label: 'Pricing' },
+  { href: '/contact',      label: 'Contact' },
+]
+
 export default function LandingPage() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+
   return (
     <div className="flex flex-col" style={{ background: BG, color: '#44403C' }}>
+
+      {/* ── Mobile menu overlay ──────────────────────── */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col sm:hidden" style={{ background: '#042F2E' }}>
+          <div className="flex items-center justify-between px-5 h-14 border-b shrink-0"
+            style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+            <Logo iconSize={26} wordmarkClass="text-white" className="shrink-0" />
+            <button onClick={() => setMobileOpen(false)} aria-label="Close menu"
+              className="p-2 rounded-lg text-white/60 hover:text-white transition-colors">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <nav className="flex flex-col px-5 pt-4 flex-1 overflow-y-auto">
+            {NAV_LINKS.map(({ href, label }) => (
+              <a key={href} href={href}
+                onClick={() => setMobileOpen(false)}
+                className="py-4 text-lg font-medium text-white/70 hover:text-white border-b transition-colors"
+                style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                {label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="px-5 pb-10 pt-6 flex flex-col gap-3">
+            <Link href="/login" onClick={() => setMobileOpen(false)}
+              className="block text-center py-3 rounded-xl font-medium text-white/70 transition-colors"
+              style={{ border: '1px solid rgba(255,255,255,0.18)' }}>
+              Sign in
+            </Link>
+            <Link href="/signup" onClick={() => setMobileOpen(false)}
+              className="block text-center py-3 rounded-xl font-semibold text-white transition-all hover:scale-[1.01]"
+              style={{ background: 'linear-gradient(135deg, #F97316 0%, #EA6C0A 100%)', boxShadow: '0 4px 20px rgba(249,115,22,0.35)' }}>
+              Try for free
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* ── Nav ─────────────────────────────────────── */}
       <header
@@ -32,26 +81,31 @@ export default function LandingPage() {
           <Logo iconSize={26} wordmarkClass="text-[#042F2E]" className="shrink-0" />
 
           <nav className="hidden sm:flex items-center gap-6 text-sm text-stone-500">
-            {['#how-it-works', '#features', '#about', '#faq'].map((href) => (
+            {NAV_LINKS.map(({ href, label }) => (
               <a key={href} href={href}
-                className="hover:text-[#042F2E] transition-colors capitalize">
-                {href.replace('#', '').replace('-', ' ')}
+                className="hover:text-[#042F2E] transition-colors">
+                {label}
               </a>
             ))}
-            <Link href="/blog" className="hover:text-[#042F2E] transition-colors">Blog</Link>
-            <Link href="/contact" className="hover:text-[#042F2E] transition-colors">Contact</Link>
           </nav>
 
           <div className="flex items-center gap-2 shrink-0">
             <Link href="/login"
-              className="px-4 py-1.5 text-sm font-medium text-stone-500 hover:text-[#042F2E] transition-colors">
+              className="hidden sm:block px-4 py-1.5 text-sm font-medium text-stone-500 hover:text-[#042F2E] transition-colors">
               Sign in
             </Link>
             <Link href="/signup"
-              className="px-4 py-1.5 text-sm font-semibold rounded-xl text-white transition-all hover:scale-[1.02]"
+              className="hidden sm:block px-4 py-1.5 text-sm font-semibold rounded-xl text-white transition-all hover:scale-[1.02]"
               style={{ background: '#F97316', boxShadow: '0 0 18px rgba(249,115,22,0.25)' }}>
               Try for free
             </Link>
+            <button
+              className="sm:hidden p-2 rounded-lg text-stone-500 hover:text-[#042F2E] transition-colors"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open menu"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
           </div>
         </div>
       </header>
@@ -223,6 +277,8 @@ export default function LandingPage() {
             <a href="#how-it-works" className="hover:text-white/60 transition-colors">How it works</a>
             <a href="#features" className="hover:text-white/60 transition-colors">Features</a>
             <a href="#faq" className="hover:text-white/60 transition-colors">FAQ</a>
+            <Link href="/pricing" className="hover:text-white/60 transition-colors">Pricing</Link>
+            <Link href="/blog" className="hover:text-white/60 transition-colors">Blog</Link>
             <Link href="/contact" className="hover:text-white/60 transition-colors">Contact</Link>
             <Link href="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>

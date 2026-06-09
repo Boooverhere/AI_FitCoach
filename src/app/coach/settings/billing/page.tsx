@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { CreditCard, CheckCircle2, AlertTriangle, XCircle, Clock } from 'lucide-react'
 import { BillingActions } from './BillingActions'
+import { PlanPicker } from './PlanPicker'
 
 export default async function BillingPage() {
   const supabase = await createClient()
@@ -40,31 +41,16 @@ export default async function BillingPage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-[var(--border-8)] bg-[var(--bg-surface)] p-6 flex flex-col gap-5">
-        <StatusInfo status={status} periodEnd={periodEnd} />
-        <BillingActions status={status} />
-      </div>
-
-      <div className="rounded-2xl border border-[var(--border-8)] bg-[var(--bg-surface)] p-6">
-        <h2 className="font-semibold mb-4">Plan includes</h2>
-        <ul className="flex flex-col gap-2.5">
-          {[
-            'Unlimited clients',
-            'Program & workout builder',
-            'Daily check-ins & habit tracking',
-            'Direct messaging with clients',
-            'Progress photos & charts',
-            'AI daily digest & coaching identity',
-            'Team dashboard & insights',
-          ].map((feature) => (
-            <li key={feature} className="flex items-center gap-2 text-sm text-[var(--fg-50)]">
-              <CheckCircle2 className="h-4 w-4 text-[var(--accent-fg)] shrink-0" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-        <p className="mt-4 text-xs text-[var(--fg-30)]">$19 / month · Cancel anytime · Cancellations must be submitted at least 48 hours before your next billing date</p>
-      </div>
+      {status === 'active' || status === 'pending' ? (
+        <div className="rounded-2xl border border-[var(--border-8)] bg-[var(--bg-surface)] p-6 flex flex-col gap-5">
+          <StatusInfo status={status} periodEnd={periodEnd} />
+          <BillingActions status={status} />
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-[var(--border-8)] bg-[var(--bg-surface)] p-6">
+          <PlanPicker />
+        </div>
+      )}
     </div>
   )
 }
