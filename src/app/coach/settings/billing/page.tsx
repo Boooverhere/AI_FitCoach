@@ -83,7 +83,7 @@ function StatusInfo({ status, periodEnd }: {
           <p className="font-semibold text-sm">Trial active</p>
           {periodEnd && (
             <p className="text-xs text-[var(--fg-40)] mt-0.5">
-              First billing on {fmt(periodEnd)} — $19/month.
+              First billing on {fmt(periodEnd)}.
             </p>
           )}
         </div>
