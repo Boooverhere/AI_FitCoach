@@ -111,6 +111,8 @@ export default function AboutPage() {
             </Link>
             <p className="text-xs mt-3" style={{ color: MUTED }}>
               Have a question? <Link href="/contact" className="text-teal-600 hover:underline">Get in touch</Link>
+              {' '}or email the founder directly at{' '}
+              <a href="mailto:mehdi@coachecking.com" className="text-teal-600 hover:underline">mehdi@coachecking.com</a>
             </p>
           </div>
 

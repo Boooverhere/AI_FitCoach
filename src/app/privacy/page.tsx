@@ -123,11 +123,11 @@ export default function PrivacyPage() {
                 <li>Data portability</li>
                 <li>Lodge a complaint with your local data protection authority</li>
               </ul>
-              <p className="mt-3">To exercise any of these rights, contact us at <a href="mailto:support@coacheckin.com" className="text-teal-600 hover:underline">support@coacheckin.com</a>.</p>
+              <p className="mt-3">To exercise any of these rights, contact us at <a href="mailto:support@coachecking.com" className="text-teal-600 hover:underline">support@coachecking.com</a>.</p>
             </Section>
 
             <Section title="10. CCPA (California Residents)">
-              <p>If you are a California resident, you have the right to know what personal information we collect, request deletion, and opt out of any sale of personal information. Coacheckin does not sell personal information. To submit a request, contact us at <a href="mailto:support@coacheckin.com" className="text-teal-600 hover:underline">support@coacheckin.com</a>.</p>
+              <p>If you are a California resident, you have the right to know what personal information we collect, request deletion, and opt out of any sale of personal information. Coacheckin does not sell personal information. To submit a request, contact us at <a href="mailto:support@coachecking.com" className="text-teal-600 hover:underline">support@coachecking.com</a>.</p>
             </Section>
 
             <Section title="11. Cookies">
@@ -143,7 +143,7 @@ export default function PrivacyPage() {
             </Section>
 
             <Section title="14. Contact">
-              <p>For privacy questions or data requests, contact us at <a href="mailto:support@coacheckin.com" className="text-teal-600 hover:underline">support@coacheckin.com</a> or via our <Link href="/contact" className="text-teal-600 hover:underline">Contact page</Link>.</p>
+              <p>For privacy questions or data requests, contact us at <a href="mailto:support@coachecking.com" className="text-teal-600 hover:underline">support@coachecking.com</a> or via our <Link href="/contact" className="text-teal-600 hover:underline">Contact page</Link>.</p>
             </Section>
 
           </div>

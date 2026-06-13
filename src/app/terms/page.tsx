@@ -75,7 +75,7 @@ export default function TermsPage() {
             </Section>
 
             <Section title="5. Refund Policy">
-              <p>All subscription fees are non-refundable except where required by applicable law. If you believe you were charged in error, contact us at <a href="mailto:support@coacheckin.com" className="text-teal-600 hover:underline">support@coacheckin.com</a> within 14 days of the charge.</p>
+              <p>All subscription fees are non-refundable except where required by applicable law. If you believe you were charged in error, contact us at <a href="mailto:support@coachecking.com" className="text-teal-600 hover:underline">support@coachecking.com</a> within 14 days of the charge.</p>
               <p className="mt-3">Refund requests are reviewed on a case-by-case basis. Chargebacks submitted directly to your bank without first contacting us may result in account suspension.</p>
             </Section>
 
@@ -121,7 +121,7 @@ export default function TermsPage() {
 
             <Section title="14. Contact">
               <p>Coacheckin is a trading name operated by <strong>Mehdi Elyoussefi</strong>, a self-employed individual (auto-entrepreneur) registered in Morocco.</p>
-              <p className="mt-3">For questions about these Terms, contact us at <a href="mailto:support@coacheckin.com" className="text-teal-600 hover:underline">support@coacheckin.com</a> or via our <Link href="/contact" className="text-teal-600 hover:underline">Contact page</Link>.</p>
+              <p className="mt-3">For questions about these Terms, contact us at <a href="mailto:contact@coachecking.com" className="text-teal-600 hover:underline">contact@coachecking.com</a> or via our <Link href="/contact" className="text-teal-600 hover:underline">Contact page</Link>.</p>
             </Section>
 
           </div>
