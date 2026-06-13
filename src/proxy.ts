@@ -30,7 +30,7 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
-  const publicRoutes = ['/', '/login', '/signup', '/onboarding', '/auth', '/contact', '/blog', '/api/stripe', '/api/webhooks', '/pricing', '/terms', '/privacy', '/about']
+  const publicRoutes = ['/', '/login', '/signup', '/onboarding', '/auth', '/contact', '/blog', '/api/stripe', '/api/webhooks', '/api/contact', '/pricing', '/terms', '/privacy', '/about']
   const isPublic =
     publicRoutes.some((r) => pathname === r || pathname.startsWith(r + '/')) ||
     pathname === '/sitemap.xml' ||
