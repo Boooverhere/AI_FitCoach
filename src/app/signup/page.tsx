@@ -17,6 +17,7 @@ export default function SignupPage() {
   const [agreed, setAgreed] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [checkEmail, setCheckEmail] = useState(false)
   const router = useRouter()
 
   async function handleSignup(e: React.FormEvent) {
@@ -25,12 +26,12 @@ export default function SignupPage() {
     setError('')
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { full_name: name },
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
       },
     })
 
@@ -40,7 +41,16 @@ export default function SignupPage() {
       return
     }
 
-    // After signup, go to onboarding to pick role
+    // If no session, email confirmation is required — show check-your-email screen.
+    // The confirmation link includes ?next=/onboarding so the user lands on onboarding
+    // already authenticated and can correctly set their role.
+    if (!data.session) {
+      setCheckEmail(true)
+      setLoading(false)
+      return
+    }
+
+    // Email confirmation disabled — authenticated immediately, go straight to onboarding
     router.push('/onboarding')
     router.refresh()
   }
@@ -52,6 +62,20 @@ export default function SignupPage() {
       </div>
 
       <div className="w-full max-w-sm relative">
+
+        {checkEmail ? (
+          <div className="flex flex-col items-center text-center gap-4">
+            <Logo iconSize={44} wordmarkClass="text-[var(--fg)] text-xl" className="mb-2" />
+            <div className="h-14 w-14 rounded-full bg-[var(--accent-tint)] flex items-center justify-center text-2xl">📬</div>
+            <h1 className="text-2xl font-bold">Check your email</h1>
+            <p className="text-[var(--fg-40)] text-sm leading-relaxed">
+              We sent a confirmation link to <strong className="text-[var(--fg)]">{email}</strong>.<br />
+              Click it to confirm your account — you&apos;ll be taken straight to setup.
+            </p>
+            <p className="text-xs text-[var(--fg-40)] mt-2">Didn&apos;t get it? Check your spam folder.</p>
+          </div>
+        ) : (
+        <>
         <div className="flex flex-col items-center mb-8">
           <Logo iconSize={44} wordmarkClass="text-[var(--fg)] text-xl" className="mb-4" />
           <h1 className="text-2xl font-bold">Create account</h1>
@@ -121,6 +145,8 @@ export default function SignupPage() {
             Sign in
           </Link>
         </p>
+        </>
+        )}
       </div>
     </div>
   )
