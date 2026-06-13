@@ -116,11 +116,12 @@ export default function TermsPage() {
             </Section>
 
             <Section title="13. Governing Law">
-              <p>These Terms are governed by the laws of the jurisdiction in which Coacheckin operates. Any disputes shall be resolved through binding arbitration or the courts of competent jurisdiction.</p>
+              <p>These Terms are governed by the laws of the Kingdom of Morocco. Any disputes arising from or relating to these Terms shall be subject to the exclusive jurisdiction of the competent courts of Morocco.</p>
             </Section>
 
             <Section title="14. Contact">
-              <p>For questions about these Terms, contact us at <a href="mailto:support@coacheckin.com" className="text-teal-600 hover:underline">support@coacheckin.com</a> or via our <Link href="/contact" className="text-teal-600 hover:underline">Contact page</Link>.</p>
+              <p>Coacheckin is a trading name operated by <strong>Mehdi Elyoussefi</strong>, a self-employed individual (auto-entrepreneur) registered in Morocco.</p>
+              <p className="mt-3">For questions about these Terms, contact us at <a href="mailto:support@coacheckin.com" className="text-teal-600 hover:underline">support@coacheckin.com</a> or via our <Link href="/contact" className="text-teal-600 hover:underline">Contact page</Link>.</p>
             </Section>
 
           </div>
@@ -131,11 +132,12 @@ export default function TermsPage() {
         <div className="max-w-5xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <Logo iconSize={20} wordmarkClass="text-white/70 text-sm" />
           <div className="flex items-center gap-5 text-xs" style={{ color: 'rgba(255,255,255,0.30)' }}>
+            <Link href="/about" className="hover:text-white/60 transition-colors">About</Link>
             <Link href="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>
             <Link href="/contact" className="hover:text-white/60 transition-colors">Contact</Link>
           </div>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.18)' }}>&copy; {new Date().getFullYear()} Coacheckin</p>
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.18)' }}>&copy; {new Date().getFullYear()} Coacheckin &mdash; operated by Mehdi Elyoussefi, Morocco</p>
         </div>
       </footer>
     </div>

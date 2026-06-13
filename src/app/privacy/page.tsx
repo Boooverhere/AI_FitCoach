@@ -56,7 +56,7 @@ export default function PrivacyPage() {
           <div className="flex flex-col gap-8" style={{ color: '#44403C' }}>
 
             <Section title="1. Introduction">
-              <p>Coacheckin (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is committed to protecting the personal data of coaches, clients, and visitors who use our platform. This Privacy Policy explains what data we collect, how we use it, and your rights.</p>
+              <p>Coacheckin (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is a trading name operated by <strong>Mehdi Elyoussefi</strong>, a self-employed individual (auto-entrepreneur) registered in Morocco. We are committed to protecting the personal data of coaches, clients, and visitors who use our platform. This Privacy Policy explains what data we collect, how we use it, and your rights.</p>
             </Section>
 
             <Section title="2. Data We Collect">
@@ -154,11 +154,12 @@ export default function PrivacyPage() {
         <div className="max-w-5xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <Logo iconSize={20} wordmarkClass="text-white/70 text-sm" />
           <div className="flex items-center gap-5 text-xs" style={{ color: 'rgba(255,255,255,0.30)' }}>
+            <Link href="/about" className="hover:text-white/60 transition-colors">About</Link>
             <Link href="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-white/60 transition-colors">Privacy</Link>
             <Link href="/contact" className="hover:text-white/60 transition-colors">Contact</Link>
           </div>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.18)' }}>&copy; {new Date().getFullYear()} Coacheckin</p>
+          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.18)' }}>&copy; {new Date().getFullYear()} Coacheckin &mdash; operated by Mehdi Elyoussefi, Morocco</p>
         </div>
       </footer>
     </div>

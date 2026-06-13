@@ -22,7 +22,7 @@ const MUTED    = '#78716C'
 const NAV_LINKS = [
   { href: '#how-it-works', label: 'How it works' },
   { href: '#features',     label: 'Features' },
-  { href: '#about',        label: 'About' },
+  { href: '/about',        label: 'About' },
   { href: '#faq',          label: 'FAQ' },
   { href: '/pricing',      label: 'Pricing' },
   { href: '/contact',      label: 'Contact' },
@@ -278,6 +278,7 @@ export default function LandingPage() {
             <a href="#features" className="hover:text-white/60 transition-colors">Features</a>
             <a href="#faq" className="hover:text-white/60 transition-colors">FAQ</a>
             <Link href="/pricing" className="hover:text-white/60 transition-colors">Pricing</Link>
+            <Link href="/about" className="hover:text-white/60 transition-colors">About</Link>
             <Link href="/blog" className="hover:text-white/60 transition-colors">Blog</Link>
             <Link href="/contact" className="hover:text-white/60 transition-colors">Contact</Link>
             <Link href="/terms" className="hover:text-white/60 transition-colors">Terms</Link>
@@ -288,7 +289,7 @@ export default function LandingPage() {
         </div>
         <div className="max-w-5xl mx-auto px-5 mt-4 text-center">
           <p className="text-xs" style={{ color: 'rgba(255,255,255,0.15)' }}>
-            Payments processed by Dodo Payments, authorised reseller of Coacheckin subscriptions.
+            Coacheckin is operated by Mehdi Elyoussefi, a self-employed individual (auto-entrepreneur) registered in Morocco. Payments processed by Dodo Payments, authorised reseller of Coacheckin subscriptions.
           </p>
         </div>
       </footer>
