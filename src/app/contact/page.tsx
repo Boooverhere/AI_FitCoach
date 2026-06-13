@@ -169,8 +169,8 @@ export default function ContactPage() {
 
               <p className="text-xs text-center" style={{ color: MUTED }}>
                 For billing or account issues email{' '}
-                <a href="mailto:support@coachecking.com" className="text-teal-600 hover:underline">
-                  support@coachecking.com
+                <a href="mailto:support@coacheckin.com" className="text-teal-600 hover:underline">
+                  support@coacheckin.com
                 </a>
               </p>
             </form>
