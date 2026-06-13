@@ -105,7 +105,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="font-semibold text-sm mb-1" style={{ color: HEADLINE }}>Message sent</p>
-                <p className="text-sm" style={{ color: MUTED }}>We&apos;ll get back to you at <strong>{email}</strong> as soon as possible.</p>
+                <p className="text-sm" style={{ color: MUTED }}>We&apos;ll get back to you at <strong>contact@coacheckin.com</strong> as soon as possible.</p>
               </div>
               <button onClick={() => { setStatus('idle'); setName(''); setEmail(''); setMessage(''); setTopic('general') }}
                 className="text-xs text-teal-600 hover:underline mt-1">
