@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getAllPostMetas } from '@/lib/blog'
 
-const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://www.coacheckin.com'
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://coacheckin.com'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getAllPostMetas()
@@ -28,10 +28,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     ...blogEntries,
     {
+      url: `${SITE_URL}/pricing`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/about`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
       url: `${SITE_URL}/contact`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,
+    },
+    {
+      url: `${SITE_URL}/terms`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: `${SITE_URL}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.3,
     },
     {
       url: `${SITE_URL}/login`,
