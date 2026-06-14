@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
+import { requireAiFeature } from '@/lib/requireAiFeature'
 
 export async function POST(req: Request) {
   try {
@@ -18,6 +19,9 @@ export async function POST(req: Request) {
     if (!profile || profile.role !== 'coach') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
+
+    const gate = await requireAiFeature(supabase, user.id, 'AI Coaching Identity')
+    if (gate) return gate
 
     const body = await req.json()
     const { base64, mediaType, fileName } = body as {

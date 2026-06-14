@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import OpenAI from 'openai'
 import { NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rateLimit'
+import { requireAiFeature } from '@/lib/requireAiFeature'
 
 export interface AdjustedExercise {
   name: string
@@ -105,6 +106,9 @@ export async function POST(req: Request) {
     if (!coach || coach.role !== 'coach') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
+
+    const gate = await requireAiFeature(supabase, user.id, 'AI program adjustments')
+    if (gate) return gate
 
     const { programText, clientId } = await req.json() as { programText: string; clientId: string }
     if (!programText?.trim() || !clientId) {
